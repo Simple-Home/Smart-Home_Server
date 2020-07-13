@@ -21,6 +21,7 @@ const char *stringToCharArray(String Text)
 }
 
 //RAM :D
+int waity = 0;
 String ssid = "";
 String pasw = "";
 String apiToken = "";
@@ -465,48 +466,58 @@ void setup()
 }
 void loop()
 {
-  if (!wifiConnect(ssid, pasw, true)){
+
+  if (!wifiConnect(ssid, pasw, true))
+  {
     serveConfigPage();
+    dnsServer.processNextRequest();
+    server.handleClient();
+    waity++;
+    if (waity > 500000)
+    {
+      waity = 0;
+      wifiConnect(ssid, pasw);
+    }
+    delay(1);
     return;
   }
-  
-    StaticJsonDocument<250> jsonContent = {};
-    jsonContent["token"] = apiToken;
 
-    if (buttonPushed)
+  StaticJsonDocument<250> jsonContent = {};
+  jsonContent["token"] = apiToken;
+
+  if (buttonPushed)
+  {
+    jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
+    jsonContent["values"]["wifi"]["unit"] = "dBm";
+    jsonContent["values"]["on/off"]["value"] = state;
+    jsonContent["values"]["wifi"]["unit"] = "";
+    Serial.println("Sending State to server - " + String(state));
+    buttonPushed = false;
+  }
+
+  if (!sendData(jsonContent))
+  {
+    Serial.println("REQ Failed");
+    return;
+  }
+
+  String requestStatus = jsonObject["state"];
+  if (requestStatus == "succes")
+  {
+    String hostname = jsonObject["device"]["hostname"];
+    String command = jsonObject["command"];
+
+    bool serverState = jsonObject["values"]["on/off"];
+    if (serverState != state)
     {
-      jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
-      jsonContent["values"]["wifi"]["unit"] = "dBm";
-      jsonContent["values"]["on/off"]["value"] = state;
-      jsonContent["values"]["wifi"]["unit"] = "";
-      Serial.println("Sending State to server - " + String(state));
-      buttonPushed = false;
-    }
-
-    if (!sendData(jsonContent))
-    {
-      Serial.println("REQ Failed");
-      return;
-    }
-
-    String requestStatus = jsonObject["state"];
-    if (requestStatus == "succes")
-    {
-      String hostname = jsonObject["device"]["hostname"];
-      String command = jsonObject["command"];
-
-      bool serverState = jsonObject["values"]["on/off"];
-      if (serverState != state)
+      if (buttonPushed)
       {
-        if (buttonPushed)
-        {
-          return;
-        }
-        SetRelayState(serverState);
+        return;
       }
-
-      commandExecution(command);
-      WiFi.hostname(hostname);
+      SetRelayState(serverState);
     }
-  
+
+    commandExecution(command);
+    WiFi.hostname(hostname);
+  }
 }
