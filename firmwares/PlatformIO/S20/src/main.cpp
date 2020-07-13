@@ -1,9 +1,11 @@
 #include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <EEPROM.h>
+#include <ESP8266WebServer.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
+#include <EEPROM.h>
 #include <ArduinoJson.h>
+#include <DNSServer.h>
 
 //Pins
 #define SONOFF_RELAY 12
@@ -26,6 +28,9 @@ bool state = false;
 bool buttonPushed = false;
 StaticJsonDocument<265> jsonObject;
 DeserializationError jsonError;
+ESP8266WebServer server(80);
+const byte DNS_PORT = 53;
+DNSServer dnsServer;
 
 //Variables
 const char apiCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
@@ -180,19 +185,19 @@ String sendHttpRequest(String requestJson)
   https.setReuse(true);
   https.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
 
-  https.setFollowRedirects()
-  
-  //https.setRedirectLimit(3);
-  https.addHeader("Content-Type", "application/json");;
+  //https.setRedirectLimit(1);
+  https.addHeader("Content-Type", "application/json");
+
   int httpsCode = https.POST("");
   String payload = "";
   Serial.println(httpsCode);
-  if(httpsCode>0) {
+  if (httpsCode > 0)
+  {
     payload = https.getString();
     Serial.print(payload);
   }
   https.end();
-  return response; 
+  return response;
 }
 bool sendData(StaticJsonDocument<250> requestJson)
 {
@@ -253,12 +258,17 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
   Serial.println("Unable to connect!" + WiFi.status());
   return false;
 }
-void wifiScan()
+String wifiScan()
 {
+  String wifiHtmlList = "";
   int n = WiFi.scanNetworks();
   Serial.println("Wifi scan Done");
   if (n == 0)
+  {
+
     Serial.println("no networks found");
+    wifiHtmlList += "<label>No networks found...</label>";
+  }
   else
   {
     Serial.print(n);
@@ -273,9 +283,122 @@ void wifiScan()
       Serial.print(WiFi.RSSI(i));
       Serial.print(")");
       Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*");
+      wifiHtmlList += "<a href=\"#\" onclick=\"fillSSID(this.innerHTML)\">" + WiFi.SSID(i) + "</a><br>";
       delay(10);
     }
   }
+  return wifiHtmlList;
+}
+
+//Web Pages Functions
+String pageContent = "";
+String styleContent = "";
+String scriptContent = "";
+
+String getPage()
+{
+  String htmlBody = "< !DOCTYPE html >";
+  htmlBody += "<head>";
+  htmlBody += styleContent;
+  htmlBody += "<style>";
+  htmlBody += "</style>";
+  htmlBody += "</ head>";
+  htmlBody += "< body >";
+  htmlBody += pageContent;
+  htmlBody += "<script>";
+  htmlBody += scriptContent;
+  htmlBody += "</ script>";
+  htmlBody += "</ body> ";
+  return htmlBody;
+}
+void addPageContent(String contentPart)
+{
+  pageContent += contentPart;
+}
+void addPageStyle(String stylePart)
+{
+  styleContent += stylePart;
+}
+void addPageScript(String scriptPart)
+{
+  scriptContent += scriptPart;
+}
+void serveConfigPage()
+{
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  WiFi.softAPdisconnect(true);
+
+  String styles = "";
+  styles += "html {display: table;margin: auto;font-family: \"Metropolis\", sans-serif;}";
+  styles += "body {display: table-cell;vertical-align: middle;background: #182239;color: #d4def7;}";
+  styles += "input {width: 100%;box-sizing: border-box;line-height: 1.5;background: #121a2b;border-radius: 3px;border: 0px solid transparent;color: #d4def7;padding: 0.5em 0.8em;height: 2.5rem;line-height: 1.5;background: #121a2b;width: 100%;display: block;}";
+  styles += "a {display: block;color: #DDE7F5;text-decoration:underline;}";
+  addPageStyle(styles);
+
+  String scripts = "";
+  scripts += "function fillSSID(value) {\r\n";
+  scripts += "document.getElementById(\"wifi-ssid\").value = value;\r\n";
+  scripts += "}";
+  addPageScript(scripts);
+
+  String body = "";
+  body += "<h2>WIFI Configuration</h2>";
+  body += "<a href='#'>Refresh</a>";
+  body += "<div class=\"wifi-list\">";
+  body += wifiScan();
+  body += "</div>";
+  body += "<form method='get' action=''><div class='wifi-form'>";
+  body += "<label>SSID: </label><input name='wifi-ssid' id='wifi-ssid' length=32 type='text'><br>";
+  body += "<label>Heslo: </label><input name='wifi-pasw' length=32 type='password'><br>";
+  body += "<label>Api token: </label><input name='apiToken' length=32 type='password'><br>";
+  body += "<input type='submit' value='Connect'>";
+  body += "</div></form>";
+  addPageContent(body);
+
+  //Routing
+  server.on("/", []() {
+    if (server.args() == 3)
+    {
+      ssid = server.arg("wifi-ssid");
+      pasw = server.arg("wifi-pasw");
+      apiToken = server.arg("apiToken");
+      if (ssid != "" && pasw != "" && apiToken != "")
+      {
+        CleanEeprom();
+        WriteEeprom(ssid);
+        WriteEeprom(pasw, 33);
+        WriteEeprom(apiToken, 65);
+        server.send(200, "application/json", "Restarting esp");
+        delay(500);
+        ESP.restart();
+      }
+    }
+    server.send(200, "text/html", getPage());
+  });
+
+  server.onNotFound([]() {
+    if (server.args() == 3)
+    {
+      ssid = server.arg("wifi-ssid");
+      pasw = server.arg("wifi-pasw");
+      apiToken = server.arg("apiToken");
+      if (ssid != "" && pasw != "" && apiToken != "")
+      {
+        CleanEeprom();
+        WriteEeprom(ssid);
+        WriteEeprom(pasw, 33);
+        WriteEeprom(apiToken, 65);
+        server.send(200, "application/json", "Restarting esp");
+        delay(500);
+        ESP.restart();
+      }
+    }
+    server.send(200, "text/html", getPage());
+  });
+
+  //Captive Portal
+  dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
 }
 
 //Root/Core Functions
@@ -324,7 +447,7 @@ void setup()
   //Wifi Conection
   if (!wifiConnect(ssid, pasw, true))
   {
-    //setup configuration portal
+    serveConfigPage();
     return;
   }
 
@@ -342,42 +465,48 @@ void setup()
 }
 void loop()
 {
-  StaticJsonDocument<250> jsonContent = {};
-  jsonContent["token"] = apiToken;
-
-  if (buttonPushed)
-  {
-    jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
-    jsonContent["values"]["wifi"]["unit"] = "dBm";
-    jsonContent["values"]["on/off"]["value"] = state;
-    jsonContent["values"]["wifi"]["unit"] = "";
-    Serial.println("Sending State to server - " + String(state));
-    buttonPushed = false;
-  }
-
-  if (!sendData(jsonContent))
-  {
-    Serial.println("REQ Failed");
+  if (!wifiConnect(ssid, pasw, true)){
+    serveConfigPage();
     return;
   }
+  
+    StaticJsonDocument<250> jsonContent = {};
+    jsonContent["token"] = apiToken;
 
-  String requestStatus = jsonObject["state"];
-  if (requestStatus == "succes")
-  {
-    String hostname = jsonObject["device"]["hostname"];
-    String command = jsonObject["command"];
-
-    bool serverState = jsonObject["values"]["on/off"];
-    if (serverState != state)
+    if (buttonPushed)
     {
-      if (buttonPushed)
-      {
-        return;
-      }
-      SetRelayState(serverState);
+      jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
+      jsonContent["values"]["wifi"]["unit"] = "dBm";
+      jsonContent["values"]["on/off"]["value"] = state;
+      jsonContent["values"]["wifi"]["unit"] = "";
+      Serial.println("Sending State to server - " + String(state));
+      buttonPushed = false;
     }
 
-    commandExecution(command);
-    WiFi.hostname(hostname);
-  }
+    if (!sendData(jsonContent))
+    {
+      Serial.println("REQ Failed");
+      return;
+    }
+
+    String requestStatus = jsonObject["state"];
+    if (requestStatus == "succes")
+    {
+      String hostname = jsonObject["device"]["hostname"];
+      String command = jsonObject["command"];
+
+      bool serverState = jsonObject["values"]["on/off"];
+      if (serverState != state)
+      {
+        if (buttonPushed)
+        {
+          return;
+        }
+        SetRelayState(serverState);
+      }
+
+      commandExecution(command);
+      WiFi.hostname(hostname);
+    }
+  
 }
