@@ -15,25 +15,23 @@
 </p>
 
 
-[![PHP](https://img.shields.io/badge/PHP-brightgreen.svg)](https://github.com/GamerClassN7/Smart_Home/search?l=php)
-[![JS](https://img.shields.io/badge/JS-red.svg)](https://github.com/GamerClassN7/Smart_Home/search?l=js)
 [![HTML](https://img.shields.io/badge/HTML-blue.svg)](https://github.com/GamerClassN7/Smart_Home/search?l=html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Discord](https://img.shields.io/discord/604697675430101003.svg?color=Blue&label=Discord&logo=Discord)](https://discord.gg/XJpT3UQ)
 
 <!-- ABOUT THE PROJECT -->
-## About Smart_Home
+## About Simple Home
 
-**Smart_Home** is a home automation project suited for **ESP boards** family (including NodeMCU). It supports PWA; supports tons of sensors; has modern and elegant UI; is easily customizable; is multilangual.
+**Simple Home** is a home automation project suited for **ESP boards** family (including NodeMCU). Supports tons of sensors; has modern and elegant UI; is easily customizable; is multilangual.
 
-#### What works with Smart_Home?
-* temperature sensors (e.g. DHT11/22)
-* humidity sensors (e.g. DHT11/22)
-* light detectors
-* water leak sensors
-* voltage meters
-* electricity consumption meters
-* switches
+#### What works with Simple Home - Firmwares?
+
+- Shelly v1
+- Sonoff Basic
+- Sonoff S20
+- ESP-01
+- NodeMcu
+
 * and many more!
 
 <!-- LICENSE -->
