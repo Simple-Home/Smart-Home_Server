@@ -178,7 +178,9 @@ String sendHttpRequest(String requestJson)
   client.setInsecure();
   https.begin(client, String(apiHost + apiUrl));
   https.setReuse(true);
-  https.setFollowRedirects(true);
+  https.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+
+  https.setFollowRedirects()
   
   //https.setRedirectLimit(3);
   https.addHeader("Content-Type", "application/json");;
