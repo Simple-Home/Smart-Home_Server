@@ -96,9 +96,9 @@ void addLog(String logMsg)
 //Utils Functions
 void ledWaiting()
 {
-  digitalWrite(SONOFF_LED, HIGH);
-  delay(500);
   digitalWrite(SONOFF_LED, LOW);
+  delay(500);
+  digitalWrite(SONOFF_LED, HIGH);
   delay(500);
 }
 bool Contains(String s, String search)
@@ -189,7 +189,7 @@ String sendHttpRequest(String requestJson)
   //https.setRedirectLimit(1);
   https.addHeader("Content-Type", "application/json");
 
-  int httpsCode = https.POST("");
+  int httpsCode = https.POST(requestJson);
   String payload = "";
   Serial.println(httpsCode);
   if (httpsCode > 0)
@@ -198,7 +198,7 @@ String sendHttpRequest(String requestJson)
     Serial.print(payload);
   }
   https.end();
-  return response;
+  return payload;
 }
 bool sendData(StaticJsonDocument<250> requestJson)
 {
@@ -467,7 +467,7 @@ void setup()
 void loop()
 {
 
-  if (!wifiConnect(ssid, pasw, true))
+  if (!waitForWifi(1))
   {
     serveConfigPage();
     dnsServer.processNextRequest();
