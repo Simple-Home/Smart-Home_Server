@@ -32,6 +32,7 @@ DeserializationError jsonError;
 ESP8266WebServer server(80);
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
+WiFiClientSecure client;
 
 //Variables
 const char apiCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
@@ -115,42 +116,43 @@ bool Contains(String s, String search)
 }
 void otaHandler()
 {
-  // WiFiClientSecure client;
-  // configTime(3 * 3600, 0, "pool.ntp.org");
+  client.setInsecure();
+  configTime(3 * 3600, 0, "pool.ntp.org");
 
-  // if (!client.connect(stringToCharArray(otaHost), 443))
-  // {
-  //   addLog("connection failed");
-  //   Serial.println("OTA - Connection Failed!");
-  //   return;
-  // }
+  if (!client.connect(stringToCharArray(otaHost), 443))
+  {
+    addLog("connection failed");
+    Serial.println("OTA - Connection Failed!");
+    return;
+  }
 
-  // if (certificateFingerprint != "" || !client.verify(stringToCharArray(certificateFingerprint), stringToCharArray(otaHost)))
-  // {
-  //   addLog("certificate doesn't match");
-  //   Serial.println("OTA - Server Certificate is not Valid!");
-  //   return;
-  // }
+  if (otaCA != "" || !client.verify(stringToCharArray(otaCA), stringToCharArray(otaHost)))
+  {
+    addLog("certificate doesn't match");
+    Serial.println("OTA - Server Certificate is not Valid!");
+    return;
+  }
 
-  // Serial.println("OTA - Starting Update");
-  // auto ret = ESPhttpUpdate.update(client, stringToCharArray(otaHost), 80, stringToCharArray(otaUrl));
-  // delay(500);
-  // switch (ret)
-  // {
-  // case HTTP_UPDATE_FAILED:
-  //   Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
-  //   addLog("HTTP_UPDATE_FAILD Error (" + (String)ESPhttpUpdate.getLastError() + ") : " + (String)ESPhttpUpdate.getLastErrorString().c_str());
-  //   break;
+  Serial.println("OTA - Starting Update");
+  auto ret = ESPhttpUpdate.update(client, stringToCharArray(otaHost), 80, stringToCharArray(otaUrl));
+  delay(500);
 
-  // case HTTP_UPDATE_NO_UPDATES:
-  //   Serial.println("HTTP_UPDATE_NO_UPDATES");
-  //   break;
+  switch (ret)
+  {
+  case HTTP_UPDATE_FAILED:
+    Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+    addLog("HTTP_UPDATE_FAILD Error (" + (String)ESPhttpUpdate.getLastError() + ") : " + (String)ESPhttpUpdate.getLastErrorString().c_str());
+    break;
 
-  // case HTTP_UPDATE_OK:
-  //   Serial.println("HTTP_UPDATE_OK");
-  //   break;
-  // }
-  // delay(500);
+  case HTTP_UPDATE_NO_UPDATES:
+    Serial.println("HTTP_UPDATE_NO_UPDATES");
+    break;
+
+  case HTTP_UPDATE_OK:
+    Serial.println("HTTP_UPDATE_OK");
+    break;
+  }
+  delay(500);
 }
 void commandExecution(String command)
 {
@@ -178,7 +180,7 @@ void commandExecution(String command)
 //HTTP Request Functions
 HTTPClient https;
 String response;
-WiFiClientSecure client;
+
 String sendHttpRequest(String requestJson)
 {
   client.setInsecure();
@@ -186,7 +188,7 @@ String sendHttpRequest(String requestJson)
   https.setReuse(true);
   https.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
 
-  //https.setRedirectLimit(1);
+  https.setRedirectLimit(1);
   https.addHeader("Content-Type", "application/json");
 
   int httpsCode = https.POST(requestJson);
@@ -453,7 +455,7 @@ void setup()
   }
 
   //Check OTA Updates
-  //otaHandler();
+  otaHandler();
 
   //Diag Data sendData
   StaticJsonDocument<250> jsonContent = {};
