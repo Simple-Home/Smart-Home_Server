@@ -35,7 +35,7 @@ DNSServer dnsServer;
 WiFiClientSecure client;
 
 //DebugSetting coment when release
-// #define DEBUG_DISABLED true
+#define DEBUG_DISABLED true
 
 //Variables
 const char apiCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
@@ -45,7 +45,7 @@ String apiUrl = "/vasek/home-update/api/endpoint";
 //Simpe-Home OTA
 const char otaCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
 String otaHost = "https://dev.steelants.cz";
-String otaUrl = "/vasek/home/update.php";
+String otaUrl = "/vasek/home-update/api/update";
 
 //Configuration AP
 String configApName = "";
@@ -129,7 +129,7 @@ void otaHandler()
 {
   client.setInsecure();
   configTime(3 * 3600, 0, "pool.ntp.org");
-
+  
   if (!client.connect(stringToCharArray(otaHost), 443))
   {
     addLog("connection failed");
@@ -479,11 +479,11 @@ void setup()
   Serial.println("Booted-UP");
 #endif
 
-  //debug
+  /*//debug
   CleanEeprom();
   WriteEeprom("*");
   WriteEeprom("*", 33);
-  WriteEeprom("*", 65);
+  WriteEeprom("*", 65);*/
 
   //read saved data
   ssid = ReadEeprom(1, 33);
