@@ -429,7 +429,6 @@ void setup()
   WriteEeprom("*");
   WriteEeprom("*", 33);
   WriteEeprom("*", 65);
-  // wifiScan();
 
   //read saved data
   ssid = ReadEeprom(1, 33);
@@ -503,23 +502,31 @@ void loop()
     return;
   }
 
-  String requestStatus = jsonObject["state"];
-  if (requestStatus == "succes")
+  if (!jsonObject.containsKey("state") && !jsonObject.containsKey("values"))
   {
-    String hostname = jsonObject["device"]["hostname"];
-    String command = jsonObject["command"];
-
-    bool serverState = jsonObject["values"]["on/off"];
-    if (serverState != state)
-    {
-      if (buttonPushed)
-      {
-        return;
-      }
-      SetRelayState(serverState);
-    }
-
-    commandExecution(command);
-    WiFi.hostname(hostname);
+    return;
   }
+
+  if (jsonObject["state"] != "succes")
+  {
+    return;
+  }
+
+  String hostname = jsonObject["device"]["hostname"];
+  bool serverState = jsonObject["values"]["on/off"];
+  if (serverState != state)
+  {
+    if (buttonPushed)
+    {
+      return;
+    }
+    SetRelayState(serverState);
+  }
+
+  if (jsonObject.containsKey("command"))
+  {
+    commandExecution(jsonObject["command"]);
+  }
+
+  WiFi.hostname(hostname);
 }
