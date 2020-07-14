@@ -34,6 +34,9 @@ const byte DNS_PORT = 53;
 DNSServer dnsServer;
 WiFiClientSecure client;
 
+//DebugSetting coment when release
+// #define DEBUG_DISABLED true
+
 //Variables
 const char apiCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
 String apiHost = "https://dev.steelants.cz";
@@ -43,6 +46,10 @@ String apiUrl = "/vasek/home-update/api/endpoint";
 const char otaCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
 String otaHost = "https://dev.steelants.cz";
 String otaUrl = "/vasek/home/update.php";
+
+//Configuration AP
+String configApName = "";
+String configApPassword = "";
 
 //EPROM Functions
 void WriteEeprom(String data, int start = 1)
@@ -75,7 +82,9 @@ String ReadEeprom(int min, int max)
 //State Functions
 void SetRelayState(bool relayState)
 {
+#ifdef DEBUG_DISABLED
   Serial.println("Changing relay state -> " + String(relayState));
+#endif
   digitalWrite(SONOFF_RELAY, relayState);
   EEPROM.write(0, relayState);
   EEPROM.commit();
@@ -84,7 +93,9 @@ void SetRelayState(bool relayState)
 void SetRelayLastState()
 {
   bool relayState = EEPROM.read(0);
+#ifdef DEBUG_DISABLED
   Serial.println("Changing relay state -> " + String(relayState));
+#endif
   digitalWrite(SONOFF_RELAY, relayState);
   state = relayState;
 }
@@ -122,34 +133,45 @@ void otaHandler()
   if (!client.connect(stringToCharArray(otaHost), 443))
   {
     addLog("connection failed");
+#ifdef DEBUG_DISABLED
     Serial.println("OTA - Connection Failed!");
+#endif
     return;
   }
 
   if (otaCA != "" || !client.verify(stringToCharArray(otaCA), stringToCharArray(otaHost)))
   {
     addLog("certificate doesn't match");
+#ifdef DEBUG_DISABLED
     Serial.println("OTA - Server Certificate is not Valid!");
+#endif
     return;
   }
-
+#ifdef DEBUG_DISABLED
   Serial.println("OTA - Starting Update");
+#endif
   auto ret = ESPhttpUpdate.update(client, stringToCharArray(otaHost), 80, stringToCharArray(otaUrl));
   delay(500);
 
   switch (ret)
   {
   case HTTP_UPDATE_FAILED:
+#ifdef DEBUG_DISABLED
     Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+#endif
     addLog("HTTP_UPDATE_FAILD Error (" + (String)ESPhttpUpdate.getLastError() + ") : " + (String)ESPhttpUpdate.getLastErrorString().c_str());
     break;
 
   case HTTP_UPDATE_NO_UPDATES:
+#ifdef DEBUG_DISABLED
     Serial.println("HTTP_UPDATE_NO_UPDATES");
+#endif
     break;
 
   case HTTP_UPDATE_OK:
+#ifdef DEBUG_DISABLED
     Serial.println("HTTP_UPDATE_OK");
+#endif
     break;
   }
   delay(500);
@@ -158,12 +180,16 @@ void commandExecution(String command)
 {
   if (command == "reset")
   {
+#ifdef DEBUG_DISABLED
     Serial.println("Command - Reset");
+#endif
     ESP.reset();
   }
   else if (command == "config")
   {
+#ifdef DEBUG_DISABLED
     Serial.println("Command - Config");
+#endif
     CleanEeprom();
     EEPROM.commit();
     ESP.restart();
@@ -173,7 +199,9 @@ void commandExecution(String command)
   }
   else
   {
+#ifdef DEBUG_DISABLED
     Serial.println("Command - Unknown");
+#endif
   }
 }
 
@@ -222,7 +250,9 @@ bool sendData(StaticJsonDocument<250> requestJson)
 bool waitForWifi(int timeout = 30)
 {
   int i = 0;
+#ifdef DEBUG_DISABLED
   Serial.println("Waiting for Wifi");
+#endif
   while (i < timeout)
   {
     if (WiFi.status() == WL_CONNECTED)
@@ -230,7 +260,9 @@ bool waitForWifi(int timeout = 30)
       return true;
     }
     ledWaiting();
+#ifdef DEBUG_DISABLED
     Serial.println("Connecting.. status: " + String(WiFi.status()));
+#endif
     i++;
   }
   return false;
@@ -238,6 +270,7 @@ bool waitForWifi(int timeout = 30)
 bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = false)
 {
   WiFi.persistent(false);
+#ifdef DEBUG_DISABLED
   Serial.print("SSID:");
   Serial.print(localSsid);
   Serial.println(":");
@@ -245,6 +278,7 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
   Serial.print("Password:");
   Serial.print(localPasw);
   Serial.println(":");
+#endif
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(localSsid, localPasw);
@@ -254,28 +288,36 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
   }
   if (WiFi.status() == WL_CONNECTED)
   {
+#ifdef DEBUG_DISABLED
     Serial.println("Connected!");
+#endif
     return true;
   }
-
+#ifdef DEBUG_DISABLED
   Serial.println("Unable to connect!" + WiFi.status());
+#endif
   return false;
 }
 String wifiScan()
 {
   String wifiHtmlList = "";
   int n = WiFi.scanNetworks();
+#ifdef DEBUG_DISABLED
   Serial.println("Wifi scan Done");
+#endif
   if (n == 0)
   {
-
+#ifdef DEBUG_DISABLED
     Serial.println("no networks found");
+#endif
     wifiHtmlList += "<label>No networks found...</label>";
   }
   else
   {
+#ifdef DEBUG_DISABLED
     Serial.print(n);
     Serial.println(" networks found");
+#endif
     for (int i = 0; i < n; ++i)
     {
       // Print SSID and RSSI for each network found
@@ -323,6 +365,7 @@ void addPageStyle(String stylePart)
   styleContent += stylePart;
 }
 void addPageScript(String scriptPart)
+
 {
   scriptContent += scriptPart;
 }
@@ -331,6 +374,15 @@ void serveConfigPage()
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
   WiFi.softAPdisconnect(true);
+  WiFi.softAP(configApName, configApPassword);
+
+#ifdef DEBUG_DISABLED
+  Serial.println("Wifi - Soft AP");
+  Serial.print("Local IP: ");
+  Serial.println(WiFi.localIP());
+  Serial.print("SoftAP IP: ");
+  Serial.println(WiFi.softAPIP());
+#endif
 
   String styles = "";
   styles += "html {display: table;margin: auto;font-family: \"Metropolis\", sans-serif;}";
@@ -360,6 +412,7 @@ void serveConfigPage()
   addPageContent(body);
 
   //Routing
+  server.begin();
   server.on("/", []() {
     if (server.args() == 3)
     {
@@ -379,7 +432,6 @@ void serveConfigPage()
     }
     server.send(200, "text/html", getPage());
   });
-
   server.onNotFound([]() {
     if (server.args() == 3)
     {
@@ -418,11 +470,14 @@ void ICACHE_RAM_ATTR handleInterruptRising()
 void setup()
 {
   EEPROM.begin(100);
+
+#ifdef DEBUG_DISABLED
   Serial.begin(115200);
   while (!Serial)
     continue;
   delay(2000);
   Serial.println("Booted-UP");
+#endif
 
   //debug
   CleanEeprom();
@@ -492,13 +547,17 @@ void loop()
     jsonContent["values"]["wifi"]["unit"] = "dBm";
     jsonContent["values"]["on/off"]["value"] = state;
     jsonContent["values"]["wifi"]["unit"] = "";
+#ifdef DEBUG_DISABLED
     Serial.println("Sending State to server - " + String(state));
+#endif
     buttonPushed = false;
   }
 
   if (!sendData(jsonContent))
   {
+#ifdef DEBUG_DISABLED
     Serial.println("REQ Failed");
+#endif
     return;
   }
 
@@ -512,7 +571,6 @@ void loop()
     return;
   }
 
-  String hostname = jsonObject["device"]["hostname"];
   bool serverState = jsonObject["values"]["on/off"];
   if (serverState != state)
   {
@@ -528,5 +586,8 @@ void loop()
     commandExecution(jsonObject["command"]);
   }
 
-  WiFi.hostname(hostname);
+  if (!jsonObject["device"]["hostname"])
+  {
+    WiFi.hostname(stringToCharArray(jsonObject["device"]["hostname"]));
+  }
 }
