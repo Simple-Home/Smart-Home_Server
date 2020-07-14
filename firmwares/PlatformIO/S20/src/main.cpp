@@ -127,30 +127,26 @@ bool Contains(String s, String search)
 }
 void otaHandler()
 {
-  client.setInsecure();
   configTime(3 * 3600, 0, "pool.ntp.org");
-  
-  if (!client.connect(stringToCharArray(otaHost), 443))
-  {
-    addLog("connection failed");
-#ifdef DEBUG_DISABLED
-    Serial.println("OTA - Connection Failed!");
-#endif
-    return;
-  }
 
-  if (otaCA != "" || !client.verify(stringToCharArray(otaCA), stringToCharArray(otaHost)))
-  {
-    addLog("certificate doesn't match");
-#ifdef DEBUG_DISABLED
-    Serial.println("OTA - Server Certificate is not Valid!");
-#endif
-    return;
-  }
+  //   if (otaCA != "" || !client.verify(stringToCharArray(otaCA), stringToCharArray(otaHost)))
+  //   {
+  //     addLog("certificate doesn't match");
+  // #ifdef DEBUG_DISABLED
+  //     Serial.println("OTA - Server Certificate is not Valid!");
+  // #endif
+  //     return;
+  //   }
+
 #ifdef DEBUG_DISABLED
   Serial.println("OTA - Starting Update");
 #endif
-  auto ret = ESPhttpUpdate.update(client, stringToCharArray(otaHost), 80, stringToCharArray(otaUrl));
+
+  client.setInsecure();
+  auto ret = ESPhttpUpdate.update(otaHost, otaUrl, "1t");
+
+  ESPhttpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+
   delay(500);
 
   switch (ret)
@@ -510,6 +506,7 @@ void setup()
 
   //Check OTA Updates
   otaHandler();
+  return;
 
   //Diag Data sendData
   StaticJsonDocument<250> jsonContent = {};
@@ -522,7 +519,6 @@ void setup()
 }
 void loop()
 {
-
   if (!waitForWifi(1))
   {
     serveConfigPage();
