@@ -127,50 +127,37 @@ bool Contains(String s, String search)
 }
 void otaHandler()
 {
-  configTime(3 * 3600, 0, "pool.ntp.org");
-
-  //   if (otaCA != "" || !client.verify(stringToCharArray(otaCA), stringToCharArray(otaHost)))
-  //   {
-  //     addLog("certificate doesn't match");
-  // #ifdef DEBUG_DISABLED
-  //     Serial.println("OTA - Server Certificate is not Valid!");
-  // #endif
-  //     return;
-  //   }
-
 #ifdef DEBUG_DISABLED
-  Serial.println("OTA - Starting Update");
+  Serial.println("OTA - Starting");
 #endif
+  BearSSL::WiFiClientSecure UpdateClient;
+  UpdateClient.setInsecure();
 
-  client.setInsecure();
-  auto ret = ESPhttpUpdate.update(otaHost, otaUrl, "1t");
+  ESPhttpUpdate.setLedPin(SONOFF_LED, LOW);
+  t_httpUpdate_return result = ESPhttpUpdate.update(UpdateClient, otaHost + otaUrl);
 
-  ESPhttpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
-
-  delay(500);
-
-  switch (ret)
+  switch (result)
   {
   case HTTP_UPDATE_FAILED:
 #ifdef DEBUG_DISABLED
-    Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+    Serial.println("OTA - Update failed:");
+    Serial.println("  LastError: " + ESPhttpUpdate.getLastError());
+    Serial.println("  Error: " + ESPhttpUpdate.getLastErrorString());
 #endif
-    addLog("HTTP_UPDATE_FAILD Error (" + (String)ESPhttpUpdate.getLastError() + ") : " + (String)ESPhttpUpdate.getLastErrorString().c_str());
     break;
 
   case HTTP_UPDATE_NO_UPDATES:
 #ifdef DEBUG_DISABLED
-    Serial.println("HTTP_UPDATE_NO_UPDATES");
+    Serial.println("OTA - No Update Available");
 #endif
     break;
 
   case HTTP_UPDATE_OK:
 #ifdef DEBUG_DISABLED
-    Serial.println("HTTP_UPDATE_OK");
+    Serial.println("OTA - Update OK");
 #endif
     break;
   }
-  delay(500);
 }
 void commandExecution(String command)
 {
