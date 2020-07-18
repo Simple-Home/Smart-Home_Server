@@ -25,6 +25,7 @@ int waity = 0;
 String ssid = "";
 String pasw = "";
 String apiToken = "";
+String logs = "";
 bool state = false;
 bool buttonPushed = false;
 StaticJsonDocument<265> jsonObject;
@@ -35,7 +36,7 @@ DNSServer dnsServer;
 WiFiClientSecure client;
 
 //DebugSetting coment when release
-#define DEBUG_DISABLED true
+//#define DEBUG_DISABLED true
 
 //Variables
 const char apiCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
@@ -98,11 +99,6 @@ void SetRelayLastState()
 #endif
   digitalWrite(SONOFF_RELAY, relayState);
   state = relayState;
-}
-
-//LOG Functions
-void addLog(String logMsg)
-{
 }
 
 //Utils Functions
@@ -229,6 +225,30 @@ bool sendData(StaticJsonDocument<250> requestJson)
   return false;
 }
 
+//LOG Functions
+void addLog(String logMsg)
+{
+  if (logs == "")
+  {
+    logs = "\"" + logMsg + "\"";
+  }
+  else
+  {
+    logs += ",\"" + logMsg + "\"";
+  }
+}
+bool sendLogs()
+{
+  if (logs != "")
+  {
+    StaticJsonDocument<250> jsonContent = {};
+    jsonContent["token"] = apiToken;
+    deserializeJson(jsonContent, "{\"logs\":[" + logs + "]}");
+    return sendData(jsonContent);
+  }
+  return false;
+}
+
 //WiFi Functions
 bool waitForWifi(int timeout = 30)
 {
@@ -339,6 +359,26 @@ String getPage()
   htmlBody += "</ body> ";
   return htmlBody;
 }
+void serverResponseHandler()
+{
+  if (server.args() == 3)
+  {
+    ssid = server.arg("wifi-ssid");
+    pasw = server.arg("wifi-pasw");
+    apiToken = server.arg("apiToken");
+    if (ssid != "" && pasw != "" && apiToken != "")
+    {
+      CleanEeprom();
+      WriteEeprom(ssid);
+      WriteEeprom(pasw, 33);
+      WriteEeprom(apiToken, 65);
+      server.send(200, "application/json", "Restarting esp");
+      delay(500);
+      ESP.restart();
+    }
+  }
+  server.send(200, "text/html", getPage());
+}
 void addPageContent(String contentPart)
 {
   pageContent += contentPart;
@@ -348,7 +388,6 @@ void addPageStyle(String stylePart)
   styleContent += stylePart;
 }
 void addPageScript(String scriptPart)
-
 {
   scriptContent += scriptPart;
 }
@@ -397,42 +436,10 @@ void serveConfigPage()
   //Routing
   server.begin();
   server.on("/", []() {
-    if (server.args() == 3)
-    {
-      ssid = server.arg("wifi-ssid");
-      pasw = server.arg("wifi-pasw");
-      apiToken = server.arg("apiToken");
-      if (ssid != "" && pasw != "" && apiToken != "")
-      {
-        CleanEeprom();
-        WriteEeprom(ssid);
-        WriteEeprom(pasw, 33);
-        WriteEeprom(apiToken, 65);
-        server.send(200, "application/json", "Restarting esp");
-        delay(500);
-        ESP.restart();
-      }
-    }
-    server.send(200, "text/html", getPage());
+    serverResponseHandler();
   });
   server.onNotFound([]() {
-    if (server.args() == 3)
-    {
-      ssid = server.arg("wifi-ssid");
-      pasw = server.arg("wifi-pasw");
-      apiToken = server.arg("apiToken");
-      if (ssid != "" && pasw != "" && apiToken != "")
-      {
-        CleanEeprom();
-        WriteEeprom(ssid);
-        WriteEeprom(pasw, 33);
-        WriteEeprom(apiToken, 65);
-        server.send(200, "application/json", "Restarting esp");
-        delay(500);
-        ESP.restart();
-      }
-    }
-    server.send(200, "text/html", getPage());
+    serverResponseHandler();
   });
 
   //Captive Portal
@@ -444,10 +451,6 @@ void ICACHE_RAM_ATTR handleInterruptFalling()
 {
   buttonPushed = true;
   SetRelayState(!state);
-}
-void ICACHE_RAM_ATTR handleInterruptRising()
-{
-  buttonPushed = false;
 }
 
 void setup()
@@ -462,11 +465,13 @@ void setup()
   Serial.println("Booted-UP");
 #endif
 
-  /*//debug
+  //debug
+  /*
   CleanEeprom();
   WriteEeprom("*");
   WriteEeprom("*", 33);
-  WriteEeprom("*", 65);*/
+  WriteEeprom("*", 65);
+  */
 
   //read saved data
   ssid = ReadEeprom(1, 33);
@@ -479,7 +484,6 @@ void setup()
   pinMode(SONOFF_RELAY, OUTPUT);
 
   attachInterrupt(SONOFF_BUT, handleInterruptFalling, FALLING);
-  //attachInterrupt(SONOFF_BUT, handleInterruptRising, HIGH);
 
   //Load Last known State
   SetRelayLastState();
@@ -493,7 +497,6 @@ void setup()
 
   //Check OTA Updates
   otaHandler();
-  return;
 
   //Diag Data sendData
   StaticJsonDocument<250> jsonContent = {};
