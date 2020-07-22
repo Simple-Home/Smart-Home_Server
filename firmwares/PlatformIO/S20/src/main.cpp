@@ -127,7 +127,15 @@ void otaHandler()
   Serial.println("OTA - Starting");
 #endif
   BearSSL::WiFiClientSecure UpdateClient;
-  UpdateClient.setInsecure();
+
+  if (otaCA != "")
+  {
+    UpdateClient.setFingerprint(otaCA);
+  }
+  else
+  {
+    UpdateClient.setInsecure();
+  }
 
   ESPhttpUpdate.setLedPin(SONOFF_LED, LOW);
   t_httpUpdate_return result = ESPhttpUpdate.update(UpdateClient, otaHost + otaUrl);
