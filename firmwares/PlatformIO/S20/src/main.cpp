@@ -353,18 +353,18 @@ String scriptContent = "";
 
 String getPage()
 {
-  String htmlBody = "< !DOCTYPE html >";
-  htmlBody += "<head>";
+  String htmlBody = F("< !DOCTYPE html >");
+  htmlBody += F("<head>");
   htmlBody += styleContent;
-  htmlBody += "<style>";
-  htmlBody += "</style>";
-  htmlBody += "</ head>";
-  htmlBody += "< body >";
+  htmlBody += F("<style>");
+  htmlBody += F("</style>");
+  htmlBody += F("</ head>");
+  htmlBody += F("< body >");
   htmlBody += pageContent;
-  htmlBody += "<script>";
+  htmlBody += F("<script>");
   htmlBody += scriptContent;
-  htmlBody += "</ script>";
-  htmlBody += "</ body> ";
+  htmlBody += F("</ script>");
+  htmlBody += F("</ body> )");
   return htmlBody;
 }
 void serverResponseHandler()
@@ -415,30 +415,30 @@ void serveConfigPage()
 #endif
 
   String styles = "";
-  styles += "html {display: table;margin: auto;font-family: \"Metropolis\", sans-serif;}";
-  styles += "body {display: table-cell;vertical-align: middle;background: #182239;color: #d4def7;}";
-  styles += "input {width: 100%;box-sizing: border-box;line-height: 1.5;background: #121a2b;border-radius: 3px;border: 0px solid transparent;color: #d4def7;padding: 0.5em 0.8em;height: 2.5rem;line-height: 1.5;background: #121a2b;width: 100%;display: block;}";
-  styles += "a {display: block;color: #DDE7F5;text-decoration:underline;}";
+  styles += F("html {display: table;margin: auto;font-family: \"Metropolis\", sans-serif;}");
+  styles += F("body {display: table-cell;vertical-align: middle;background: #182239;color: #d4def7;}");
+  styles += F("input {width: 100%;box-sizing: border-box;line-height: 1.5;background: #121a2b;border-radius: 3px;border: 0px solid transparent;color: #d4def7;padding: 0.5em 0.8em;height: 2.5rem;line-height: 1.5;background: #121a2b;width: 100%;display: block;}");
+  styles += F("a {display: block;color: #DDE7F5;text-decoration:underline;}");
   addPageStyle(styles);
 
   String scripts = "";
-  scripts += "function fillSSID(value) {\r\n";
-  scripts += "document.getElementById(\"wifi-ssid\").value = value;\r\n";
-  scripts += "}";
+  scripts += F("function fillSSID(value) {\r\n");
+  scripts += F("document.getElementById(\"wifi-ssid\").value = value;\r\n");
+  scripts += F("}");
   addPageScript(scripts);
 
   String body = "";
-  body += "<h2>WIFI Configuration</h2>";
-  body += "<a href='#'>Refresh</a>";
-  body += "<div class=\"wifi-list\">";
+  body += F("<h2>WIFI Configuration</h2>");
+  body += F("<a href='#'>Refresh</a>");
+  body += F("<div class=\"wifi-list\">");
   body += wifiScan();
-  body += "</div>";
-  body += "<form method='get' action=''><div class='wifi-form'>";
-  body += "<label>SSID: </label><input name='wifi-ssid' id='wifi-ssid' length=32 type='text'><br>";
-  body += "<label>Heslo: </label><input name='wifi-pasw' length=32 type='password'><br>";
-  body += "<label>Api token: </label><input name='apiToken' length=32 type='password'><br>";
-  body += "<input type='submit' value='Connect'>";
-  body += "</div></form>";
+  body += F("</div>");
+  body += F("<form method='get' action=''><div class='wifi-form'>");
+  body += F("<label>SSID: </label><input name='wifi-ssid' id='wifi-ssid' length=32 type='text'><br>");
+  body += F("<label>Heslo: </label><input name='wifi-pasw' length=32 type='password'><br>");
+  body += F("<label>Api token: </label><input name='apiToken' length=32 type='password'><br>");
+  body += F("<input type='submit' value='Connect'>");
+  body += F("</div></form>");
   addPageContent(body);
 
   //Routing
