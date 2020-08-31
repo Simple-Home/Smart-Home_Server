@@ -1,11 +1,13 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <EEPROM.h>
 #include <ArduinoJson.h>
+#ifdef WIFI_CONFIG_PAGE
+#include <ESP8266WebServer.h>
 #include <DNSServer.h>
+#endif
 #include <config.h>
 
 //Pins
@@ -31,10 +33,13 @@ bool state = false;
 bool buttonPushed = false;
 StaticJsonDocument<265> jsonObject;
 DeserializationError jsonError;
+WiFiClientSecure client;
+
+#ifdef WIFI_CONFIG_PAGE
 ESP8266WebServer server(80);
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
-WiFiClientSecure client;
+#endif
 
 //Ram
 long debouncing_time = 15; //Debouncing Time in Milliseconds
@@ -124,7 +129,7 @@ bool Contains(String s, String search)
   return false; //or -1
 }
 #ifdef ENABLE_OTA
-  void otaHandler()
+void otaHandler()
 {
 #ifdef ENABLE_SERIAL_PRINT
   Serial.println("OTA - Starting");
@@ -238,19 +243,19 @@ bool sendData(StaticJsonDocument<250> requestJson)
 }
 
 #ifdef ENABLE_SERVER_LOGS
-  //LOG Functions
-  void addLog(String logMsg)
+//LOG Functions
+void addLog(String logMsg)
+{
+  if (logs == "")
   {
-    if (logs == "")
-    {
-      logs = "\"" + logMsg + "\"";
-    }
-    else
-    {
-      logs += ",\"" + logMsg + "\"";
-    }
+    logs = "\"" + logMsg + "\"";
   }
-  bool sendLogs()
+  else
+  {
+    logs += ",\"" + logMsg + "\"";
+  }
+}
+bool sendLogs()
 {
   if (logs != "")
   {
@@ -352,6 +357,7 @@ String wifiScan()
   return wifiHtmlList;
 }
 
+#ifdef WIFI_CONFIG_PAGE
 //Web Pages Functions
 String pageContent = "";
 String styleContent = "";
@@ -459,35 +465,37 @@ void serveConfigPage()
   //Captive Portal
   dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
 }
+#endif
 
 //Root/Core Functions
 void ICACHE_RAM_ATTR handleInterruptFalling()
 {
-  if((long)(micros() - last_micros) >= debouncing_time * 1000) {
+  if ((long)(micros() - last_micros) >= debouncing_time * 1000)
+  {
     buttonPushed = true;
     SetRelayState(!state);
     last_micros = micros();
-  } 
+  }
 }
 
 void setup()
 {
   EEPROM.begin(100);
 
-  #ifdef ENABLE_SERIAL_PRINT
-    Serial.begin(115200);
-    while (!Serial)
-      continue;
-    delay(2000);
-    Serial.println("Booted-UP");
-  #endif
+#ifdef ENABLE_SERIAL_PRINT
+  Serial.begin(115200);
+  while (!Serial)
+    continue;
+  delay(2000);
+  Serial.println("Booted-UP");
+#endif
 
-  #ifndef WIFI_CONFIG_PAGE
-    CleanEeprom();
-    WriteEeprom(WIFI_PASSWORD, 0);
-    WriteEeprom(WIFI_SSID, 33);
-    WriteEeprom(API_TOKEN, 65);
-  #endif
+#ifndef WIFI_CONFIG_PAGE
+  CleanEeprom();
+  WriteEeprom(WIFI_PASSWORD, 0);
+  WriteEeprom(WIFI_SSID, 33);
+  WriteEeprom(API_TOKEN, 65);
+#endif
 
   //read saved data
   ssid = ReadEeprom(1, 33);
@@ -505,16 +513,19 @@ void setup()
   SetRelayLastState();
 
   //Wifi Conection
+
   if (!wifiConnect(ssid, pasw, true))
   {
+#ifdef WIFI_CONFIG_PAGE
     serveConfigPage();
+#endif
     return;
   }
 
-  //Check OTA Updates
-  #ifdef ENABLE_OTA
-    otaHandler();
-  #endif
+//Check OTA Updates
+#ifdef ENABLE_OTA
+  otaHandler();
+#endif
 
   //Diag Data sendData
   StaticJsonDocument<250> jsonContent = {};
@@ -529,9 +540,12 @@ void loop()
 {
   if (!waitForWifi(1))
   {
+#ifdef WIFI_WIFI_CONFIG_PAGE
     serveConfigPage();
     dnsServer.processNextRequest();
     server.handleClient();
+#endif
+
     waity++;
     if (waity > 500000)
     {

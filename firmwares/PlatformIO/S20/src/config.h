@@ -4,8 +4,8 @@
 
 //#define WIFI_CONFIG_PAGE
 #define ENABLE_OTA
-#define ENABLE_SERIAL_PRINT
-#define ENABLE_SERVER_LOGS
+//#define ENABLE_SERIAL_PRINT
+//#define ENABLE_SERVER_LOGS
 
 #ifdef WIFI_CONFIG_PAGE
     #define CONFIG_AP_SSID "FILL"
