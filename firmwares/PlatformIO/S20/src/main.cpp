@@ -6,6 +6,7 @@
 #include <EEPROM.h>
 #include <ArduinoJson.h>
 #include <DNSServer.h>
+#include <config.h>
 
 //Pins
 #define SONOFF_RELAY 12
@@ -34,6 +35,10 @@ ESP8266WebServer server(80);
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
 WiFiClientSecure client;
+
+//Ram
+long debouncing_time = 15; //Debouncing Time in Milliseconds
+volatile unsigned long last_micros;
 
 //DebugSetting coment when release
 //#define DEBUG_DISABLED true
@@ -457,8 +462,11 @@ void serveConfigPage()
 //Root/Core Functions
 void ICACHE_RAM_ATTR handleInterruptFalling()
 {
-  buttonPushed = true;
-  SetRelayState(!state);
+  if((long)(micros() - last_micros) >= debouncing_time * 1000) {
+    buttonPushed = true;
+    SetRelayState(!state);
+    last_micros = micros();
+  } 
 }
 
 void setup()
