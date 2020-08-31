@@ -40,22 +40,19 @@ WiFiClientSecure client;
 long debouncing_time = 15; //Debouncing Time in Milliseconds
 volatile unsigned long last_micros;
 
-//DebugSetting coment when release
-//#define DEBUG_DISABLED true
-
 //Variables
-const char apiCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
+const char apiCA[] PROGMEM = ""; //Fingerprint of Server Certificate
 String apiHost = "https://dev.steelants.cz";
 String apiUrl = "/vasek/home-update/api/endpoint";
 
 //Simpe-Home OTA
-const char otaCA[] PROGMEM = "EB D7 60 4A 74 34 F3 97 AE 9C 74 75 52 66 AA 37 0E A1 90 D8"; //Fingerprint of Server Certificate
+const char otaCA[] PROGMEM = ""; //Fingerprint of Server Certificate
 String otaHost = "https://dev.steelants.cz";
 String otaUrl = "/vasek/home-update/api/update";
 
 //Configuration AP
-String configApName = "";
-String configApPassword = "";
+String configApName = "TABLE_SOCKET";
+String configApPassword = "fTEtHGYAaA";
 
 //EPROM Functions
 void WriteEeprom(String data, int start = 1)
@@ -88,7 +85,7 @@ String ReadEeprom(int min, int max)
 //State Functions
 void SetRelayState(bool relayState)
 {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
   Serial.println("Changing relay state -> " + String(relayState));
 #endif
   digitalWrite(SONOFF_RELAY, relayState);
@@ -99,7 +96,7 @@ void SetRelayState(bool relayState)
 void SetRelayLastState()
 {
   bool relayState = EEPROM.read(0);
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
   Serial.println("Changing relay state -> " + String(relayState));
 #endif
   digitalWrite(SONOFF_RELAY, relayState);
@@ -126,9 +123,10 @@ bool Contains(String s, String search)
 
   return false; //or -1
 }
-void otaHandler()
+#ifdef ENABLE_OTA
+  void otaHandler()
 {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
   Serial.println("OTA - Starting");
 #endif
   BearSSL::WiFiClientSecure UpdateClient;
@@ -148,7 +146,7 @@ void otaHandler()
   switch (result)
   {
   case HTTP_UPDATE_FAILED:
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("OTA - Update failed:");
     Serial.println("  LastError: " + ESPhttpUpdate.getLastError());
     Serial.println("  Error: " + ESPhttpUpdate.getLastErrorString());
@@ -156,30 +154,31 @@ void otaHandler()
     break;
 
   case HTTP_UPDATE_NO_UPDATES:
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("OTA - No Update Available");
 #endif
     break;
 
   case HTTP_UPDATE_OK:
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("OTA - Update OK");
 #endif
     break;
   }
 }
+#endif
 void commandExecution(String command)
 {
   if (command == "reset")
   {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("Command - Reset");
 #endif
     ESP.reset();
   }
   else if (command == "config")
   {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("Command - Config");
 #endif
     CleanEeprom();
@@ -191,7 +190,7 @@ void commandExecution(String command)
   }
   else
   {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("Command - Unknown");
 #endif
   }
@@ -238,19 +237,20 @@ bool sendData(StaticJsonDocument<250> requestJson)
   return false;
 }
 
-//LOG Functions
-void addLog(String logMsg)
-{
-  if (logs == "")
+#ifdef ENABLE_SERVER_LOGS
+  //LOG Functions
+  void addLog(String logMsg)
   {
-    logs = "\"" + logMsg + "\"";
+    if (logs == "")
+    {
+      logs = "\"" + logMsg + "\"";
+    }
+    else
+    {
+      logs += ",\"" + logMsg + "\"";
+    }
   }
-  else
-  {
-    logs += ",\"" + logMsg + "\"";
-  }
-}
-bool sendLogs()
+  bool sendLogs()
 {
   if (logs != "")
   {
@@ -261,12 +261,13 @@ bool sendLogs()
   }
   return false;
 }
+#endif
 
 //WiFi Functions
 bool waitForWifi(int timeout = 30)
 {
   int i = 0;
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
   Serial.println("Waiting for Wifi");
 #endif
   while (i < timeout)
@@ -276,7 +277,7 @@ bool waitForWifi(int timeout = 30)
       return true;
     }
     ledWaiting();
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("Connecting.. status: " + String(WiFi.status()));
 #endif
     i++;
@@ -286,7 +287,7 @@ bool waitForWifi(int timeout = 30)
 bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = false)
 {
   WiFi.persistent(false);
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
   Serial.print("SSID:");
   Serial.print(localSsid);
   Serial.println(":");
@@ -304,12 +305,12 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
   }
   if (WiFi.status() == WL_CONNECTED)
   {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("Connected!");
 #endif
     return true;
   }
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
   Serial.println("Unable to connect!" + WiFi.status());
 #endif
   return false;
@@ -318,19 +319,19 @@ String wifiScan()
 {
   String wifiHtmlList = "";
   int n = WiFi.scanNetworks();
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
   Serial.println("Wifi scan Done");
 #endif
   if (n == 0)
   {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("no networks found");
 #endif
     wifiHtmlList += "<label>No networks found...</label>";
   }
   else
   {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.print(n);
     Serial.println(" networks found");
 #endif
@@ -411,7 +412,7 @@ void serveConfigPage()
   WiFi.softAPdisconnect(true);
   WiFi.softAP(configApName, configApPassword);
 
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
   Serial.println("Wifi - Soft AP");
   Serial.print("Local IP: ");
   Serial.println(WiFi.localIP());
@@ -473,21 +474,20 @@ void setup()
 {
   EEPROM.begin(100);
 
-#ifdef DEBUG_DISABLED
-  Serial.begin(115200);
-  while (!Serial)
-    continue;
-  delay(2000);
-  Serial.println("Booted-UP");
-#endif
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.begin(115200);
+    while (!Serial)
+      continue;
+    delay(2000);
+    Serial.println("Booted-UP");
+  #endif
 
-  //debug
-  /*
-  CleanEeprom();
-  WriteEeprom("*");
-  WriteEeprom("*", 33);
-  WriteEeprom("*", 65);
-  */
+  #ifndef WIFI_CONFIG_PAGE
+    CleanEeprom();
+    WriteEeprom(WIFI_PASSWORD, 0);
+    WriteEeprom(WIFI_SSID, 33);
+    WriteEeprom(API_TOKEN, 65);
+  #endif
 
   //read saved data
   ssid = ReadEeprom(1, 33);
@@ -512,7 +512,9 @@ void setup()
   }
 
   //Check OTA Updates
-  otaHandler();
+  #ifdef ENABLE_OTA
+    otaHandler();
+  #endif
 
   //Diag Data sendData
   StaticJsonDocument<250> jsonContent = {};
@@ -549,7 +551,7 @@ void loop()
     jsonContent["values"]["wifi"]["unit"] = "dBm";
     jsonContent["values"]["on/off"]["value"] = state;
     jsonContent["values"]["wifi"]["unit"] = "";
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("Sending State to server - " + String(state));
 #endif
     buttonPushed = false;
@@ -557,7 +559,7 @@ void loop()
 
   if (!sendData(jsonContent))
   {
-#ifdef DEBUG_DISABLED
+#ifdef ENABLE_SERIAL_PRINT
     Serial.println("REQ Failed");
 #endif
     return;
