@@ -1,3 +1,4 @@
+#include <config.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266HTTPClient.h>
@@ -5,10 +6,9 @@
 #include <EEPROM.h>
 #include <ArduinoJson.h>
 #ifdef WIFI_CONFIG_PAGE
-#include <ESP8266WebServer.h>
-#include <DNSServer.h>
+  #include <ESP8266WebServer.h>
+  #include <DNSServer.h>
 #endif
-#include <config.h>
 
 //Pins
 #define SONOFF_RELAY 12
@@ -36,13 +36,13 @@ DeserializationError jsonError;
 WiFiClientSecure client;
 
 #ifdef WIFI_CONFIG_PAGE
-ESP8266WebServer server(80);
-const byte DNS_PORT = 53;
-DNSServer dnsServer;
+  ESP8266WebServer server(80);
+  const byte DNS_PORT = 53;
+  DNSServer dnsServer;
 #endif
 
 //Ram
-long debouncing_time = 15; //Debouncing Time in Milliseconds
+long debouncing_time = 400; //Debouncing Time in Milliseconds
 volatile unsigned long last_micros;
 
 //Variables
@@ -134,16 +134,10 @@ void otaHandler()
 #ifdef ENABLE_SERIAL_PRINT
   Serial.println("OTA - Starting");
 #endif
-  BearSSL::WiFiClientSecure UpdateClient;
 
-  if (otaCA != "")
-  {
-    UpdateClient.setFingerprint(otaCA);
-  }
-  else
-  {
-    UpdateClient.setInsecure();
-  }
+  configTime(3 * 3600, 0, "pool.ntp.org");
+  BearSSL::WiFiClientSecure UpdateClient;
+  UpdateClient.setInsecure();
 
   ESPhttpUpdate.setLedPin(SONOFF_LED, LOW);
   t_httpUpdate_return result = ESPhttpUpdate.update(UpdateClient, otaHost + otaUrl);
@@ -534,6 +528,11 @@ void setup()
   jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
   jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
   jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println("MD5 Hash: " + ESP.getSketchMD5());
+    Serial.println("Local IP: " + WiFi.localIP().toString());
+    Serial.println("Mac: " + WiFi.macAddress());
+  #endif
   sendData(jsonContent);
 }
 void loop()
