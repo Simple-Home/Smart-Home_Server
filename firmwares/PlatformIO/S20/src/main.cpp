@@ -491,10 +491,12 @@ void setup()
 #endif
 
 #ifndef WIFI_CONFIG_PAGE
-  CleanEeprom();
-  WriteEeprom(WIFI_PASSWORD, 0);
-  WriteEeprom(WIFI_SSID, 33);
-  WriteEeprom(API_TOKEN, 65);
+  #ifndef USE_EPRROM_WIFI_SETING
+    CleanEeprom();
+    WriteEeprom(WIFI_PASSWORD, 0);
+    WriteEeprom(WIFI_SSID, 33);
+    WriteEeprom(API_TOKEN, 65);
+  #endif
 #endif
 
   //read saved data
@@ -507,7 +509,12 @@ void setup()
   pinMode(SONOFF_BUT, INPUT);
   pinMode(SONOFF_RELAY, OUTPUT);
 
-  attachInterrupt(SONOFF_BUT, handleInterruptFalling, FALLING);
+  #ifdef MOMENTARY_SWITCH
+    attachInterrupt(SONOFF_BUT, handleInterruptFalling, FALLING);
+  #elif defined(ON_OFF_SWITCH) 
+    attachInterrupt(SONOFF_BUT, handleInterruptFalling, RISING);
+    attachInterrupt(SONOFF_BUT, handleInterruptFalling, FALLING);
+  #endif
 
   //Load Last known State
   SetRelayLastState();
