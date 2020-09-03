@@ -12,6 +12,8 @@
 //#define USE_EPRROM_WIFI_SETING
 #define WIFI_CONFIG_PAGE
 
+//pins
+
 #ifdef WIFI_CONFIG_PAGE
     #define CONFIG_AP_SSID "VASEK_ROOM_WALL_SWITCH_0"
     #define CONFIG_AP_PASSWOR ""
