@@ -9,8 +9,8 @@
 #define USE_EPRROM_WIFI_SETING
 
 #ifdef WIFI_CONFIG_PAGE
-    #define CONFIG_AP_SSID "FILL"
-    #define CONFIG_AP_PASSWOR "FILL"
+    #define CONFIG_AP_SSID "VASEK_ROOM_SOCKET_0"
+    #define CONFIG_AP_PASSWOR "fTEtHGYAaA"
 #else
     #define WIFI_PASSWORD "FILL"
     #define WIFI_SSID "FILL"
