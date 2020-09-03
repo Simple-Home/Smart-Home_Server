@@ -209,11 +209,12 @@ void otaHandler()
 
   if (strlen(otaCA) > 0)
   {
-    UpdateClient.setInsecure();
+    UpdateClient.setFingerprint(otaCA);
   }
   else
   {
-    UpdateClient.setFingerprint(otaCA);
+    UpdateClient.setInsecure();
+    Serial.println("No FP");
   }
 
   ESPhttpUpdate.setLedPin(SONOFF_LED, LOW);
@@ -507,13 +508,11 @@ void setup()
   Serial.println("Booted-UP");
 #endif
 
-#ifndef WIFI_CONFIG_PAGE
 #ifndef USE_EPRROM_WIFI_SETING
   CleanEeprom();
-  WriteEeprom(WIFI_PASSWORD, 0);
-  WriteEeprom(WIFI_SSID, 33);
+  WriteEeprom(WIFI_SSID, 1);
+  WriteEeprom(WIFI_PASSWORD, 33);
   WriteEeprom(API_TOKEN, 65);
-#endif
 #endif
 
   //read saved data
