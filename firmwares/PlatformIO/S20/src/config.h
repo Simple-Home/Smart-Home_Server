@@ -14,12 +14,12 @@
 
 #ifdef WIFI_CONFIG_PAGE
     #define CONFIG_AP_SSID "VASEK_ROOM_WALL_SWITCH_0"
-    #define CONFIG_AP_PASSWOR "UeG18ZHtr2"
+    #define CONFIG_AP_PASSWOR ""
 #endif
 
 #ifndef USE_EPRROM_WIFI_SETING
     #define WIFI_SSID "Smart-Home"
-    #define WIFI_PASSWORD "S1pjg3684dcCPTUQ"
-    #define API_TOKEN "UeG18ZHtr2"
+    #define WIFI_PASSWORD ""
+    #define API_TOKEN ""
 #endif
 
