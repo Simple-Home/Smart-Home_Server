@@ -11,9 +11,9 @@
 #endif
 
 //Pins
-#define SONOFF_RELAY 12
+#define SONOFF_RELAY 4
 #define SONOFF_LED 13
-#define SONOFF_BUT 0
+#define SONOFF_BUT 5
 
 //type Conversions
 const char *stringToCharArray(String Text)
@@ -188,8 +188,8 @@ bool sendLogs()
   if (logs != "")
   {
     StaticJsonDocument<250> jsonContent = {};
-    jsonContent["token"] = apiToken;
     deserializeJson(jsonContent, "{\"logs\":[" + logs + "]}");
+    jsonContent["token"] = apiToken;
     return sendData(jsonContent);
   }
   return false;
@@ -289,9 +289,15 @@ void commandExecution(String command)
 bool waitForWifi(int timeout = 30)
 {
   int i = 0;
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.println("Waiting for Wifi");
-#endif
+  if (i < timeout) {
+    if (WiFi.status() == WL_CONNECTED)
+    {
+      return true;
+    }
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Waiting for Wifi");
+  #endif
+  }
   while (i < timeout)
   {
     if (WiFi.status() == WL_CONNECTED)

@@ -13,8 +13,8 @@
 #define WIFI_CONFIG_PAGE
 
 #ifdef WIFI_CONFIG_PAGE
-    #define CONFIG_AP_SSID "BATHROOM_ROOM_WALL_SWITCH"
-    #define CONFIG_AP_PASSWOR "UeG18ZHa5i"
+    #define CONFIG_AP_SSID "Filip_ROOM_WALL_SWITCH_0"
+    #define CONFIG_AP_PASSWOR "55f4g8d6ggh"
 #else
     #define WIFI_SSID "FILL"
     #define WIFI_PASSWORD "FILL"
