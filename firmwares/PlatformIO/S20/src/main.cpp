@@ -6,8 +6,8 @@
 #include <EEPROM.h>
 #include <ArduinoJson.h>
 #ifdef WIFI_CONFIG_PAGE
-  #include <ESP8266WebServer.h>
-  #include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <DNSServer.h>
 #endif
 
 //Pins
@@ -18,7 +18,7 @@
 //type Conversions
 const char *stringToCharArray(String Text)
 {
-  char charBuf[Text.length()];
+  char charBuf[] = "";
   Text.toCharArray(charBuf, Text.length());
   return charBuf;
 }
@@ -36,9 +36,9 @@ DeserializationError jsonError;
 WiFiClientSecure client;
 
 #ifdef WIFI_CONFIG_PAGE
-  ESP8266WebServer server(80);
-  const byte DNS_PORT = 53;
-  DNSServer dnsServer;
+ESP8266WebServer server(80);
+const byte DNS_PORT = 53;
+DNSServer dnsServer;
 #endif
 
 //Ram
@@ -56,8 +56,8 @@ String otaHost = "https://dev.steelants.cz";
 String otaUrl = "/vasek/home-update/api/update";
 
 //Configuration AP
-String configApName = "TABLE_SOCKET";
-String configApPassword = "fTEtHGYAaA";
+String configApName = CONFIG_AP_SSID;
+String configApPassword = CONFIG_AP_PASSWOR;
 
 //EPROM Functions
 void WriteEeprom(String data, int start = 1)
@@ -128,72 +128,6 @@ bool Contains(String s, String search)
 
   return false; //or -1
 }
-#ifdef ENABLE_OTA
-void otaHandler()
-{
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.println("OTA - Starting");
-#endif
-
-  configTime(3 * 3600, 0, "pool.ntp.org");
-  BearSSL::WiFiClientSecure UpdateClient;
-  UpdateClient.setInsecure();
-
-  ESPhttpUpdate.setLedPin(SONOFF_LED, LOW);
-  t_httpUpdate_return result = ESPhttpUpdate.update(UpdateClient, otaHost + otaUrl);
-
-  switch (result)
-  {
-  case HTTP_UPDATE_FAILED:
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("OTA - Update failed:");
-    Serial.println("  LastError: " + ESPhttpUpdate.getLastError());
-    Serial.println("  Error: " + ESPhttpUpdate.getLastErrorString());
-#endif
-    break;
-
-  case HTTP_UPDATE_NO_UPDATES:
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("OTA - No Update Available");
-#endif
-    break;
-
-  case HTTP_UPDATE_OK:
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("OTA - Update OK");
-#endif
-    break;
-  }
-}
-#endif
-void commandExecution(String command)
-{
-  if (command == "reset")
-  {
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Command - Reset");
-#endif
-    ESP.reset();
-  }
-  else if (command == "config")
-  {
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Command - Config");
-#endif
-    CleanEeprom();
-    EEPROM.commit();
-    ESP.restart();
-  }
-  else if (command == "null")
-  {
-  }
-  else
-  {
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Command - Unknown");
-#endif
-  }
-}
 
 //HTTP Request Functions
 HTTPClient https;
@@ -236,8 +170,8 @@ bool sendData(StaticJsonDocument<250> requestJson)
   return false;
 }
 
-#ifdef ENABLE_SERVER_LOGS
 //LOG Functions
+#ifdef ENABLE_SERVER_LOGS
 void addLog(String logMsg)
 {
   if (logs == "")
@@ -261,6 +195,95 @@ bool sendLogs()
   return false;
 }
 #endif
+
+//OTA Functions
+#ifdef ENABLE_OTA
+void otaHandler()
+{
+#ifdef ENABLE_SERIAL_PRINT
+  Serial.println("OTA - Starting");
+#endif
+
+  configTime(3 * 3600, 0, "pool.ntp.org");
+  BearSSL::WiFiClientSecure UpdateClient;
+
+  if (strlen(otaCA) > 0)
+  {
+    UpdateClient.setInsecure();
+  }
+  else
+  {
+    UpdateClient.setFingerprint(otaCA);
+  }
+
+  ESPhttpUpdate.setLedPin(SONOFF_LED, LOW);
+  t_httpUpdate_return result = ESPhttpUpdate.update(UpdateClient, otaHost + otaUrl);
+
+  switch (result)
+  {
+  case HTTP_UPDATE_FAILED:
+#ifdef ENABLE_SERIAL_PRINT
+    Serial.println("OTA - Update failed:");
+    Serial.println("  LastError: " + ESPhttpUpdate.getLastError());
+    Serial.println("  Error: " + ESPhttpUpdate.getLastErrorString());
+#endif
+    addLog("HTTP_UPDATE_FAILD Error (" + (String)ESPhttpUpdate.getLastError() + ") : " + (String)ESPhttpUpdate.getLastErrorString().c_str());
+    break;
+
+  case HTTP_UPDATE_NO_UPDATES:
+#ifdef ENABLE_SERIAL_PRINT
+    Serial.println("OTA - No Update Available");
+#endif
+    break;
+
+  case HTTP_UPDATE_OK:
+#ifdef ENABLE_SERIAL_PRINT
+    Serial.println("OTA - Update OK");
+#endif
+    break;
+  }
+}
+#endif
+
+//CommandsHandling
+void commandExecution(String command)
+{
+  if (command == "reset")
+  {
+#ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Command - Reset");
+#endif
+    ESP.reset();
+  }
+  else if (command == "config")
+  {
+#ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Command - Config");
+#endif
+    CleanEeprom();
+    EEPROM.commit();
+    ESP.restart();
+  }
+  else if (command == "update")
+  {
+#ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Command - Update");
+#endif
+    otaHandler();
+#ifdef ENABLE_SERVER_LOGS
+    sendLogs();
+#endif
+  }
+  else if (command == "null")
+  {
+  }
+  else
+  {
+#ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Command - Unknown");
+#endif
+  }
+}
 
 //WiFi Functions
 bool waitForWifi(int timeout = 30)
@@ -485,12 +508,12 @@ void setup()
 #endif
 
 #ifndef WIFI_CONFIG_PAGE
-  #ifndef USE_EPRROM_WIFI_SETING
-    CleanEeprom();
-    WriteEeprom(WIFI_PASSWORD, 0);
-    WriteEeprom(WIFI_SSID, 33);
-    WriteEeprom(API_TOKEN, 65);
-  #endif
+#ifndef USE_EPRROM_WIFI_SETING
+  CleanEeprom();
+  WriteEeprom(WIFI_PASSWORD, 0);
+  WriteEeprom(WIFI_SSID, 33);
+  WriteEeprom(API_TOKEN, 65);
+#endif
 #endif
 
   //read saved data
@@ -503,12 +526,12 @@ void setup()
   pinMode(SONOFF_BUT, INPUT);
   pinMode(SONOFF_RELAY, OUTPUT);
 
-  #ifdef MOMENTARY_SWITCH
-    attachInterrupt(SONOFF_BUT, handleInterruptFalling, FALLING);
-  #elif defined(ON_OFF_SWITCH) 
-    attachInterrupt(SONOFF_BUT, handleInterruptFalling, RISING);
-    attachInterrupt(SONOFF_BUT, handleInterruptFalling, FALLING);
-  #endif
+#ifdef MOMENTARY_SWITCH
+  attachInterrupt(SONOFF_BUT, handleInterruptFalling, FALLING);
+#elif defined(ON_OFF_SWITCH)
+  attachInterrupt(SONOFF_BUT, handleInterruptFalling, RISING);
+  attachInterrupt(SONOFF_BUT, handleInterruptFalling, FALLING);
+#endif
 
   //Load Last known State
   SetRelayLastState();
@@ -526,6 +549,9 @@ void setup()
 //Check OTA Updates
 #ifdef ENABLE_OTA
   otaHandler();
+#ifdef ENABLE_SERVER_LOGS
+  sendLogs();
+#endif
 #endif
 
   //Diag Data sendData
@@ -535,11 +561,11 @@ void setup()
   jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
   jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
   jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
-  #ifdef ENABLE_SERIAL_PRINT
-    Serial.println("MD5 Hash: " + ESP.getSketchMD5());
-    Serial.println("Local IP: " + WiFi.localIP().toString());
-    Serial.println("Mac: " + WiFi.macAddress());
-  #endif
+#ifdef ENABLE_SERIAL_PRINT
+  Serial.println("MD5 Hash: " + ESP.getSketchMD5());
+  Serial.println("Local IP: " + WiFi.localIP().toString());
+  Serial.println("Mac: " + WiFi.macAddress());
+#endif
   sendData(jsonContent);
 }
 void loop()
