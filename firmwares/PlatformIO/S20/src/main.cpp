@@ -577,8 +577,7 @@ void loop()
 {
   if (!waitForWifi(1))
   {
-#ifdef WIFI_WIFI_CONFIG_PAGE
-    serveConfigPage();
+#ifdef WIFI_CONFIG_PAGE
     dnsServer.processNextRequest();
     server.handleClient();
 #endif
