@@ -31,12 +31,12 @@
 /*
     Pins Settings
 */
-#define LED_PIN 1
+//#define LED_PIN 1
 //#define SWITCH1_PIN
 //#define RELAY1_PIN
-#define DHT_PIN 2
-#define LIGHT_PIN 3
-//#define PIR_PIN
+//#define DHT_PIN 2
+//#define LIGHT_PIN
+//#define MOVE_PIN
 
 /*
     Imput/Output Settings
