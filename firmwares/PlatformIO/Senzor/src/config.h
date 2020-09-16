@@ -1,8 +1,22 @@
+/*
+  █████████   ███                            ████                      █████   █████                                  
+ ███░░░░░███ ░░░                            ░░███                     ░░███   ░░███                                   
+░███    ░░░  ████  █████████████   ████████  ░███   ██████             ░███    ░███   ██████  █████████████    ██████ 
+░░█████████ ░░███ ░░███░░███░░███ ░░███░░███ ░███  ███░░███ ██████████ ░███████████  ███░░███░░███░░███░░███  ███░░███
+ ░░░░░░░░███ ░███  ░███ ░███ ░███  ░███ ░███ ░███ ░███████ ░░░░░░░░░░  ░███░░░░░███ ░███ ░███ ░███ ░███ ░███ ░███████ 
+ ███    ░███ ░███  ░███ ░███ ░███  ░███ ░███ ░███ ░███░░░              ░███    ░███ ░███ ░███ ░███ ░███ ░███ ░███░░░  
+░░█████████  █████ █████░███ █████ ░███████  █████░░██████             █████   █████░░██████  █████░███ █████░░██████ 
+ ░░░░░░░░░  ░░░░░ ░░░░░ ░░░ ░░░░░  ░███░░░  ░░░░░  ░░░░░░             ░░░░░   ░░░░░  ░░░░░░  ░░░░░ ░░░ ░░░░░  ░░░░░░  
+                                   ░███                                                                               
+                                   █████                                                                              
+                                  ░░░░░                                     Made By JonatanRek & Haitem                      
+*/
 //CONFIGURATION FILE OF Simple-Home Unified Firmware
 
 #define ENABLE_OTA
-//#define USE_EPRROM_WIFI_SETING
 #define WIFI_CONFIG_PAGE
+#define WIFI_RECONNECT_INTERVAL 500000
+//#define USE_EPRROM_WIFI_SETING
 
 /*
     Pins Settings
@@ -18,8 +32,8 @@
     Imput/Output Settings
 */
 #ifdef SWITCH1_PIN
-    //#define MOMENTARY_SWITCH
-    #define ON_OFF_SWITCH
+    #define MOMENTARY_SWITCH
+    //#define ON_OFF_SWITCH
 #endif
 #ifdef DHT_PIN
     //DHT11, DHT22
@@ -30,13 +44,13 @@
     Wifi Settings
 */
 #ifdef WIFI_CONFIG_PAGE
-    #define CONFIG_AP_SSID "VASEK_ROOM_WALL_SWITCH_0"
+    #define CONFIG_AP_SSID ""
     #define CONFIG_AP_PASSWOR ""
 #endif
 
 #ifndef USE_EPRROM_WIFI_SETING
     //oweride setting in EEPROM
-    #define WIFI_SSID "Smart-Home"
+    #define WIFI_SSID ""
     #define WIFI_PASSWORD ""
     #define API_TOKEN ""
 #endif

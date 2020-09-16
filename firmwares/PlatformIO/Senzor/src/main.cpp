@@ -552,7 +552,7 @@ void loop()
 #endif
 
     waity++;
-    if (waity > 500000)
+    if (waity > WIFI_RECONNECT_INTERVAL)
     {
       waity = 0;
       wifiConnect(ssid, pasw);
