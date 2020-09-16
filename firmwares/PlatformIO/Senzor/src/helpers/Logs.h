@@ -1,24 +1,23 @@
 #ifdef ENABLE_SERVER_LOGS
-void addLog(String logMsg)
-{
-  if (logs == "")
+  void addLog(String logMsg)
   {
-    logs = "\"" + logMsg + "\"";
+    if (logs == "")
+    {
+      logs = "\"" + logMsg + "\"";
+    }
+    else
+    {
+      logs += ",\"" + logMsg + "\"";
+    }
   }
-  else
+  bool sendLogs(String apiToken)
   {
-    logs += ",\"" + logMsg + "\"";
+    if (logs != "")
+    {
+      StaticJsonDocument<250> jsonContent = {};
+      deserializeJson(jsonContent, "{\"logs\":[" + logs + "]}");
+      return sendData(jsonContent, apiToken);
+    }
+    return false;
   }
-}
-bool sendLogs()
-{
-  if (logs != "")
-  {
-    StaticJsonDocument<250> jsonContent = {};
-    deserializeJson(jsonContent, "{\"logs\":[" + logs + "]}");
-    jsonContent["token"] = apiToken;
-    return sendData(jsonContent);
-  }
-  return false;
-}
 #endif

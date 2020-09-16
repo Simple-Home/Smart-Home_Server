@@ -7,9 +7,9 @@ bool waitForWifi(int timeout = 30)
     {
       return true;
     }
-  #ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Waiting for Wifi");
-  #endif
+    #ifdef ENABLE_SERIAL_PRINT
+      Serial.println("Waiting for Wifi");
+    #endif
   }
   while (i < timeout)
   {
@@ -17,10 +17,12 @@ bool waitForWifi(int timeout = 30)
     {
       return true;
     }
-    ledWaiting();
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Connecting.. status: " + String(WiFi.status()));
-#endif
+    #ifdef LED_PIN
+      ledWaiting();
+    #endif
+    #ifdef ENABLE_SERIAL_PRINT
+        Serial.println("Connecting.. status: " + String(WiFi.status()));
+    #endif
     i++;
   }
   return false;
@@ -28,15 +30,15 @@ bool waitForWifi(int timeout = 30)
 bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = false)
 {
   WiFi.persistent(false);
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.print("SSID:");
-  Serial.print(localSsid);
-  Serial.println(":");
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.print("SSID:");
+    Serial.print(localSsid);
+    Serial.println(":");
 
-  Serial.print("Password:");
-  Serial.print(localPasw);
-  Serial.println(":");
-#endif
+    Serial.print("Password:");
+    Serial.print(localPasw);
+    Serial.println(":");
+  #endif
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(localSsid, localPasw);
@@ -46,36 +48,36 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
   }
   if (WiFi.status() == WL_CONNECTED)
   {
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Connected!");
-#endif
+    #ifdef ENABLE_SERIAL_PRINT
+        Serial.println("Connected!");
+    #endif
     return true;
   }
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.println("Unable to connect!" + WiFi.status());
-#endif
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Unable to connect!" + WiFi.status());
+  #endif
   return false;
 }
 String wifiScan()
 {
   String wifiHtmlList = "";
   int n = WiFi.scanNetworks();
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.println("Wifi scan Done");
-#endif
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Wifi scan Done");
+  #endif
   if (n == 0)
   {
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("no networks found");
-#endif
+  #ifdef ENABLE_SERIAL_PRINT
+      Serial.println("no networks found");
+  #endif
     wifiHtmlList += "<label>No networks found...</label>";
   }
   else
   {
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.print(n);
-    Serial.println(" networks found");
-#endif
+  #ifdef ENABLE_SERIAL_PRINT
+      Serial.print(n);
+      Serial.println(" networks found");
+  #endif
     for (int i = 0; i < n; ++i)
     {
       // Print SSID and RSSI for each network found
@@ -154,13 +156,13 @@ void serveConfigPage()
   WiFi.softAPdisconnect(true);
   WiFi.softAP(configApName, configApPassword);
 
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.println("Wifi - Soft AP");
-  Serial.print("Local IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.print("SoftAP IP: ");
-  Serial.println(WiFi.softAPIP());
-#endif
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Wifi - Soft AP");
+    Serial.print("Local IP: ");
+    Serial.println(WiFi.localIP());
+    Serial.print("SoftAP IP: ");
+    Serial.println(WiFi.softAPIP());
+  #endif
 
   String styles = "";
   styles += F("html {display: table;margin: auto;font-family: \"Metropolis\", sans-serif;}");

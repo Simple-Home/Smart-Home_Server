@@ -1,4 +1,3 @@
-//EPROM Functions
 void WriteEeprom(String data, int start = 1)
 {
   for (int i = 0; i < (int)data.length(); ++i)
@@ -7,6 +6,7 @@ void WriteEeprom(String data, int start = 1)
   }
   EEPROM.commit();
 }
+
 void CleanEeprom()
 {
   for (int i = 1; i < 100; ++i)
@@ -14,6 +14,7 @@ void CleanEeprom()
     EEPROM.write(i, 0);
   }
 }
+
 String ReadEeprom(int min, int max)
 {
   String localString;

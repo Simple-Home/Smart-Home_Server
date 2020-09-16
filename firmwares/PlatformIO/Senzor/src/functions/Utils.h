@@ -1,11 +1,20 @@
-//Utils Functions
-void ledWaiting()
+const char *stringToCharArray(String Text)
 {
-  digitalWrite(LED_PIN, LOW);
-  delay(500);
-  digitalWrite(LED_PIN, HIGH);
-  delay(500);
+  char charBuf[Text.length()];
+  Text.toCharArray(charBuf, Text.length());
+  return charBuf;
 }
+
+#ifdef LED_PIN
+  void ledWaiting()
+  {
+    digitalWrite(LED_PIN, LOW);
+    delay(500);
+    digitalWrite(LED_PIN, HIGH);
+    delay(500);
+  }
+#endif
+
 bool Contains(String s, String search)
 {
   int max = s.length() - search.length();

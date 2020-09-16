@@ -22,6 +22,8 @@
     +---+-----------------------+
     | 4 | Debug Settings        |
     +---+-----------------------+
+
+    Chode functions Carefully you need more than 50% Flash left for OTA Updates!!!
 */
 #define ENABLE_OTA
 #define WIFI_CONFIG_PAGE
@@ -32,11 +34,15 @@
     Pins Settings
 */
 //#define LED_PIN 1
-//#define SWITCH1_PIN
-//#define RELAY1_PIN
+#define SWITCH1_PIN 1
+#define SWITCH1_DEBOUNCE_INTERVAL 400 //in Miliseconds
+#define RELAY1_PIN 1
+#define RELAY1_RECOVER_STATE_ON_POWER_LOSS //uncoment to enable state recovery after power loss otherwise alwais stai off
 //#define DHT_PIN 2
 //#define LIGHT_PIN
 //#define MOVE_PIN
+//#define PROG_LED_PIN
+
 
 /*
     Imput/Output Settings

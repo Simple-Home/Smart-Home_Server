@@ -1,14 +1,6 @@
 #include <config.h>
 #include <config_adv.h>
 
-//type Conversions
-const char *stringToCharArray(String Text)
-{
-  char charBuf[] = "";
-  Text.toCharArray(charBuf, Text.length());
-  return charBuf;
-}
-
 //RAM :D
 int waity = 0;
 String ssid = "";
@@ -17,9 +9,10 @@ String apiToken = "";
 #ifdef  ENABLE_SERVER_LOGS
   String logs = "";
 #endif
-#ifdef  SWITCH1_PIN
+#ifdef  RELAY1_PIN
   bool state = false;
   bool buttonPushed = false;
+  volatile unsigned long last_micros;
 #endif
 
 StaticJsonDocument<265> jsonObject;
@@ -55,7 +48,8 @@ String apiUrl = "/vasek/home-update/api/endpoint";
 
 #include <functions/Utils.h>
 #include <helpers/EEPROM.h>
-#include <functions/Senzors.h>
+#include <functions/Outputs.h>
+#include <functions/Inputs.h>
 #include <helpers/HTTP.h>
 #include <helpers/Logs.h>
 #include <helpers/OTA.h>
@@ -68,8 +62,7 @@ void setup()
 
   #ifdef ENABLE_SERIAL_PRINT
     Serial.begin(115200);
-    while (!Serial)
-      continue;
+    while (!Serial) continue;
     delay(2000);
     Serial.println("Booted-UP");
   #endif
@@ -93,6 +86,30 @@ void setup()
   #ifdef PIR_PIN
     pinMode(PIR_PIN, INPUT);
   #endif
+  #ifdef PIR_PIN
+    pinMode(PIR_PIN, INPUT);
+  #endif
+  #ifdef LED_PIN
+    pinMode(LED_PIN, OUTPUT);
+  #endif
+  #ifdef RELAY1_PIN
+    pinMode(RELAY1_PIN, OUTPUT);
+    #ifdef RELAY1_RECOVER_STATE_ON_POWER_LOSS
+      SetRelayLastState();
+    #else
+      SetRelayState(false);
+    #endif
+  #endif
+  #ifdef SWITCH1_PIN
+    pinMode(SWITCH1_PIN, INPUT);
+    #ifdef MOMENTARY_SWITCH
+      attachInterrupt(SWITCH1_PIN, handleInterruptFalling, FALLING);
+    #elif defined(ON_OFF_SWITCH)
+      attachInterrupt(SWITCH1_PIN, handleInterruptFalling, RISING);
+      attachInterrupt(SWITCH1_PIN, handleInterruptFalling, FALLING);
+    #endif
+  #endif
+
   //Wifi Conection
   if (!wifiConnect(ssid, pasw, true))
   {
@@ -106,23 +123,26 @@ void setup()
   #ifdef ENABLE_OTA
     otaHandler();
     #ifdef ENABLE_SERVER_LOGS
-      sendLogs();
+      sendLogs(apiToken);
     #endif
   #endif
 
   //Diag Data sendData
   StaticJsonDocument<250> jsonContent = {};
-  jsonContent["token"] = apiToken;
   jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
+  jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
+  jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
+
   jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
   jsonContent["values"]["wifi"]["unit"] = "dBm";
 
   #ifdef ENABLE_SERIAL_PRINT
-    Serial.println("MD5 Hash: " + ESP.getSketchMD5());
     Serial.println("Local IP: " + WiFi.localIP().toString());
     Serial.println("Mac: " + WiFi.macAddress());
+    Serial.println("MD5 Firmware Hash: " + ESP.getSketchMD5());
   #endif
-  sendData(jsonContent);
+
+  sendData(jsonContent, apiToken);
 }
 void loop()
 {
@@ -144,7 +164,18 @@ void loop()
   }
 
   StaticJsonDocument<250> jsonContent = {};
-  jsonContent["token"] = apiToken;
+  #ifdef RELAY1_PIN
+    if (buttonPushed)
+    {
+      jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
+      jsonContent["values"]["wifi"]["unit"] = "dBm";
+      jsonContent["values"]["on/off"]["value"] = state;
+      #ifdef ENABLE_SERIAL_PRINT
+          Serial.println("Sending State to server - " + String(state));
+      #endif
+      buttonPushed = false;
+    }
+  #endif
   #ifdef DHT_PIN
     jsonContent["values"]["humi"]["value"] = (int)readTemperature(dht);
     jsonContent["values"]["humi"]["unit"] = "";
@@ -160,7 +191,7 @@ void loop()
     jsonContent["values"]["move"]["unit"] = "";
   #endif
 
-  if (!sendData(jsonContent))
+  if (!sendData(jsonContent, apiToken))
   {
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("REQ Failed");
@@ -168,19 +199,26 @@ void loop()
     return;
   }
 
-  if (!jsonObject.containsKey("state") && !jsonObject.containsKey("values"))
+  if (!jsonObject.containsKey("state") && !jsonObject.containsKey("values") && jsonObject["state"] != "succes")
   {
     return;
   }
 
-  if (jsonObject["state"] != "succes")
-  {
-    return;
-  }
+  #ifdef RELAY1_PIN
+    bool serverState = jsonObject["values"]["on/off"];
+    if (serverState != state)
+    {
+      if (buttonPushed)
+      {
+        return;
+      }
+      SetRelayState(serverState);
+    }
+  #endif
 
   if (jsonObject.containsKey("command"))
   {
-    commandExecution(jsonObject["command"]);
+    commandExecution(jsonObject["command"], apiToken);
   }
 
   if (!jsonObject["device"]["hostname"])

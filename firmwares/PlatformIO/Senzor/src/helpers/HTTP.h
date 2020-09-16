@@ -1,7 +1,7 @@
 HTTPClient https;
 String response;
 
-String sendHttpRequest(String requestJson)
+String sendHttpRequest(String requestJson, String token)
 {
   client.setInsecure();
   https.begin(client, String(apiHost + apiUrl));
@@ -22,12 +22,13 @@ String sendHttpRequest(String requestJson)
   https.end();
   return payload;
 }
-bool sendData(StaticJsonDocument<250> requestJson)
+bool sendData(StaticJsonDocument<250> requestJson, String token)
 {
+  requestJson["token"] = token;
   String jsonString = "";
   serializeJson(requestJson, jsonString);
   //Serial.println(jsonString);
-  String response = sendHttpRequest(jsonString);
+  String response = sendHttpRequest(jsonString, token);
 
   if (response.length() > 1)
   {
