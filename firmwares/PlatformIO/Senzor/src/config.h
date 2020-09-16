@@ -36,7 +36,7 @@
 //#define RELAY1_PIN
 #define DHT_PIN 2
 //#define LIGHT_PIN
-//#define MOVE_PIN
+//#define PIR_PIN
 
 /*
     Imput/Output Settings
