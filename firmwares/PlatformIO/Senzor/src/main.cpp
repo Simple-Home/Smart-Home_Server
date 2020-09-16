@@ -11,11 +11,6 @@
 #include <DNSServer.h>
 #endif
 
-//Pinsd
-#define DHT_PIN 4
-#define DHT_TYTLE DHT11
-#define LED_PIN 4
-
 //type Conversions
 const char *stringToCharArray(String Text)
 {
@@ -35,7 +30,7 @@ bool buttonPushed = false;
 StaticJsonDocument<265> jsonObject;
 DeserializationError jsonError;
 WiFiClientSecure client;
-DHT dht(DHT_PIN, DHT_TYTLE);
+DHT dht(DHT_PIN, DHT_TYPLE);
 
 #ifdef WIFI_CONFIG_PAGE
 ESP8266WebServer server(80);
