@@ -53,33 +53,33 @@ String apiUrl = "/vasek/home-update/api/endpoint";
   String configApPassword = CONFIG_AP_PASSWOR;
 #endif
 
-#include <func/Utils_func.h>
-#include <func/EEPROM_func.h>
-#include <func/Senzors_func.h>
-#include <func/HTTP_helper.h>
-#include <func/Logs_helper.h>
-#include <func/OTA_helper.h>
-#include <func/Commands_Helper.h>
-#include <func/Wifi_helper.h>
+#include <functions/Utils.h>
+#include <helpers/EEPROM.h>
+#include <functions/Senzors.h>
+#include <helpers/HTTP.h>
+#include <helpers/Logs.h>
+#include <helpers/OTA.h>
+#include <helpers/Commands.h>
+#include <helpers/Wifi.h>
 
 void setup()
 {
   EEPROM.begin(100);
 
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.begin(115200);
-  while (!Serial)
-    continue;
-  delay(2000);
-  Serial.println("Booted-UP");
-#endif
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.begin(115200);
+    while (!Serial)
+      continue;
+    delay(2000);
+    Serial.println("Booted-UP");
+  #endif
 
-#ifndef USE_EPRROM_WIFI_SETING
-  CleanEeprom();
-  WriteEeprom(WIFI_SSID, 1);
-  WriteEeprom(WIFI_PASSWORD, 33);
-  WriteEeprom(API_TOKEN, 65);
-#endif
+  #ifndef USE_EPRROM_WIFI_SETING
+    CleanEeprom();
+    WriteEeprom(WIFI_SSID, 1);
+    WriteEeprom(WIFI_PASSWORD, 33);
+    WriteEeprom(API_TOKEN, 65);
+  #endif
 
   //read saved data
   ssid = ReadEeprom(1, 33);
@@ -96,19 +96,19 @@ void setup()
   //Wifi Conection
   if (!wifiConnect(ssid, pasw, true))
   {
-#ifdef WIFI_CONFIG_PAGE
-    serveConfigPage();
-#endif
+    #ifdef WIFI_CONFIG_PAGE
+        serveConfigPage();
+    #endif
     return;
   }
 
-//Check OTA Updates
-#ifdef ENABLE_OTA
-  otaHandler();
-#ifdef ENABLE_SERVER_LOGS
-  sendLogs();
-#endif
-#endif
+  //Check OTA Updates
+  #ifdef ENABLE_OTA
+    otaHandler();
+    #ifdef ENABLE_SERVER_LOGS
+      sendLogs();
+    #endif
+  #endif
 
   //Diag Data sendData
   StaticJsonDocument<250> jsonContent = {};
@@ -117,21 +117,21 @@ void setup()
   jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
   jsonContent["values"]["wifi"]["unit"] = "dBm";
 
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.println("MD5 Hash: " + ESP.getSketchMD5());
-  Serial.println("Local IP: " + WiFi.localIP().toString());
-  Serial.println("Mac: " + WiFi.macAddress());
-#endif
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println("MD5 Hash: " + ESP.getSketchMD5());
+    Serial.println("Local IP: " + WiFi.localIP().toString());
+    Serial.println("Mac: " + WiFi.macAddress());
+  #endif
   sendData(jsonContent);
 }
 void loop()
 {
   if (!waitForWifi(1))
   {
-#ifdef WIFI_CONFIG_PAGE
-    dnsServer.processNextRequest();
-    server.handleClient();
-#endif
+    #ifdef WIFI_CONFIG_PAGE
+        dnsServer.processNextRequest();
+        server.handleClient();
+    #endif
 
     waity++;
     if (waity > WIFI_RECONNECT_INTERVAL)
@@ -145,26 +145,26 @@ void loop()
 
   StaticJsonDocument<250> jsonContent = {};
   jsonContent["token"] = apiToken;
-#ifdef DHT_PIN
-  jsonContent["values"]["humi"]["value"] = (int)readTemperature(dht);
-  jsonContent["values"]["humi"]["unit"] = "";
-  jsonContent["values"]["temp"]["value"] = (int)readHumidity(dht);
-  jsonContent["values"]["temp"]["unit"] = "";
-#endif
-#ifdef LIGHT_PIN
-  jsonContent["values"]["light"]["value"] = readLight();
-  jsonContent["values"]["light"]["unit"] = "";
-#endif
-#ifdef PIR_PIN
-  jsonContent["values"]["move"]["value"] = readMovement();
-  jsonContent["values"]["move"]["unit"] = "";
-#endif
+  #ifdef DHT_PIN
+    jsonContent["values"]["humi"]["value"] = (int)readTemperature(dht);
+    jsonContent["values"]["humi"]["unit"] = "";
+    jsonContent["values"]["temp"]["value"] = (int)readHumidity(dht);
+    jsonContent["values"]["temp"]["unit"] = "";
+  #endif
+  #ifdef LIGHT_PIN
+    jsonContent["values"]["light"]["value"] = readLight();
+    jsonContent["values"]["light"]["unit"] = "";
+  #endif
+  #ifdef PIR_PIN
+    jsonContent["values"]["move"]["value"] = readMovement();
+    jsonContent["values"]["move"]["unit"] = "";
+  #endif
 
   if (!sendData(jsonContent))
   {
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("REQ Failed");
-#endif
+    #ifdef ENABLE_SERIAL_PRINT
+        Serial.println("REQ Failed");
+    #endif
     return;
   }
 
