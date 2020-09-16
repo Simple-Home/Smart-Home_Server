@@ -35,7 +35,7 @@
 //#define SWITCH1_PIN
 //#define RELAY1_PIN
 #define DHT_PIN 2
-//#define LIGHT_PIN
+#define LIGHT_PIN 3
 //#define PIR_PIN
 
 /*
