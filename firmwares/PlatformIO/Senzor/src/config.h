@@ -74,5 +74,5 @@
 /*
     Debug Settings
 */
-#define ENABLE_SERIAL_PRINT
+//#define ENABLE_SERIAL_PRINT
 #define ENABLE_SERVER_LOGS
