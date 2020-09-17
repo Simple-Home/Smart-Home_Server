@@ -175,6 +175,7 @@ void serveConfigPage()
   scripts += F("function fillSSID(value) {\r\n");
   scripts += F("document.getElementById(\"wifi-ssid\").value = value;\r\n");
   scripts += F("}");
+  scripts += F("document.getElementById(\"api-token\").value = Math.random().toString(36).replace(/[^a-z0-9]+/g, '').substr(1, 12);\r\n");
   addPageScript(scripts);
 
   String body = "";
@@ -186,7 +187,7 @@ void serveConfigPage()
   body += F("<form method='get' action=''><div class='wifi-form'>");
   body += F("<label>SSID: </label><input name='wifi-ssid' id='wifi-ssid' length=32 type='text'><br>");
   body += F("<label>Heslo: </label><input name='wifi-pasw' length=32 type='password'><br>");
-  body += F("<label>Api token: </label><input name='apiToken' length=32 type='password'><br>");
+  body += F("<label>Api token: </label><input name='apiToken' id='api-token' length=32 type='password'><br>");
   body += F("<input type='submit' value='Connect'>");
   body += F("</div></form>");
   addPageContent(body);
