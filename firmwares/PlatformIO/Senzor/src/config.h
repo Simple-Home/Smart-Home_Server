@@ -29,6 +29,7 @@
 #define WIFI_CONFIG_PAGE
 #define WIFI_RECONNECT_INTERVAL 500000
 //#define USE_EPRROM_WIFI_SETING
+//#define WATCHDOG_TRASHOLD 50 // number of error detected befor restart
 
 /*
     Pins Settings
@@ -74,5 +75,5 @@
 /*
     Debug Settings
 */
-//#define ENABLE_SERIAL_PRINT
+#define ENABLE_SERIAL_PRINT
 #define ENABLE_SERVER_LOGS

@@ -27,7 +27,10 @@ WiFiClientSecure client;
   const byte DNS_PORT = 53;
   DNSServer dnsServer;
 #endif
-
+#ifdef WATCHDOG_TRASHOLD
+  #include <helpers/Watchdog.h>
+  Watchdog watchdog(WATCHDOG_TRASHOLD);
+#endif
 //Variables
 const char apiCA[] PROGMEM = ""; //Fingerprint of Server Certificate
 String apiHost = "https://dev.steelants.cz";
@@ -55,6 +58,7 @@ String apiUrl = "/vasek/home-update/api/endpoint";
 #include <helpers/OTA.h>
 #include <helpers/Commands.h>
 #include <helpers/Wifi.h>
+
 
 void setup()
 {
@@ -146,6 +150,9 @@ void setup()
 }
 void loop()
 {
+  #ifdef WATCHDOG_TRASHOLD
+    watchdog.watch();
+  #endif
   if (!waitForWifi(1))
   {
     #ifdef WIFI_CONFIG_PAGE
@@ -196,13 +203,22 @@ void loop()
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("REQ Failed");
     #endif
+    #ifdef WATCHDOG_TRASHOLD
+      watchdog.log();
+    #endif
     return;
   }
 
   if (!jsonObject.containsKey("state") && !jsonObject.containsKey("values") && jsonObject["state"] != "succes")
   {
+    #ifdef WATCHDOG_TRASHOLD
+      watchdog.log();
+    #endif
     return;
   }
+  #ifdef WATCHDOG_TRASHOLD
+    watchdog.reset();
+  #endif
 
   #ifdef RELAY1_PIN
     bool serverState = jsonObject["values"]["on/off"];

@@ -15,7 +15,9 @@
     else
     {
       UpdateClient.setInsecure();
-      Serial.println("No FP");
+      #ifdef ENABLE_SERIAL_PRINT
+        Serial.println("No FP");
+      #endif
     }
     #ifdef LED_PIN
         ESPhttpUpdate.setLedPin(LED_PIN, LOW);
@@ -26,11 +28,13 @@
     {
     case HTTP_UPDATE_FAILED:
       #ifdef ENABLE_SERIAL_PRINT
-          Serial.println("OTA - Update failed:");
-          Serial.println("  LastError: " + ESPhttpUpdate.getLastError());
-          Serial.println("  Error: " + ESPhttpUpdate.getLastErrorString());
+        Serial.println("OTA - Update failed:");
+        Serial.println("  LastError: " + ESPhttpUpdate.getLastError());
+        Serial.println("  Error: " + ESPhttpUpdate.getLastErrorString());
       #endif
-      addLog("HTTP_UPDATE_FAILD Error (" + (String)ESPhttpUpdate.getLastError() + ") : " + (String)ESPhttpUpdate.getLastErrorString().c_str());
+      #ifdef ENABLE_SERVER_LOGS
+        addLog("HTTP_UPDATE_FAILD Error (" + (String)ESPhttpUpdate.getLastError() + ") : " + (String)ESPhttpUpdate.getLastErrorString().c_str());
+      #endif
       break;
 
     case HTTP_UPDATE_NO_UPDATES:
