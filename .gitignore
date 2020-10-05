@@ -3,3 +3,4 @@ firmwares/PlatformIO/S20/include/secureInformations.
 .pio
 .pioenvs
 .piolibdeps
+firmwares/PlatformIO/Senzor/src/config.h

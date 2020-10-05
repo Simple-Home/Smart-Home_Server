@@ -19,6 +19,8 @@ bool waitForWifi(int timeout = 30)
     }
     #ifdef LED_PIN
       ledWaiting();
+    #else
+      delay(1000);
     #endif
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("Connecting.. status: " + String(WiFi.status()));

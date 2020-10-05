@@ -120,7 +120,9 @@ void setup()
     #ifdef WIFI_CONFIG_PAGE
         serveConfigPage();
     #endif
+    delay(1000);
     return;
+
   }
 
   //Check OTA Updates
@@ -197,6 +199,10 @@ void loop()
     jsonContent["values"]["move"]["value"] = readMovement();
     jsonContent["values"]["move"]["unit"] = "";
   #endif
+  #ifdef BATT_SENSE
+    jsonContent["values"]["battery"]["value"] = readBattery();
+    jsonContent["values"]["battery"]["unit"] = "v";
+  #endif
 
   if (!sendData(jsonContent, apiToken))
   {
@@ -237,8 +243,23 @@ void loop()
     commandExecution(jsonObject["command"], apiToken);
   }
 
-  if (!jsonObject["device"]["hostname"])
+  if (jsonObject["device"]["hostname"])
   {
     WiFi.hostname(stringToCharArray(jsonObject["device"]["hostname"]));
+  }
+
+  if (jsonObject["device"]["sleepTime"])
+  {
+    int minutes = jsonObject["device"]["sleepTime"];
+    if (minutes > 0) {
+      #ifdef ENABLE_SERIAL_PRINT
+          Serial.println("going to sleep for: " + String(minutes * 60000) +  "ms / " + String(minutes) + " minutes" );
+      #endif
+      #ifdef LIGHT_PIN
+        ESP.deepSleep(minutes * 60000); 
+      #else
+        delay(minutes * 60000);
+      #endif
+    }
   }
 }
