@@ -105,18 +105,18 @@ String scriptContent = "";
 
 String getPage()
 {
-  String htmlBody = F("< !DOCTYPE html >");
+  String htmlBody = F("<!DOCTYPE html>");
   htmlBody += F("<head>");
   htmlBody += styleContent;
   htmlBody += F("<style>");
   htmlBody += F("</style>");
-  htmlBody += F("</ head>");
-  htmlBody += F("< body >");
+  htmlBody += F("</head>");
+  htmlBody += F("<body>");
   htmlBody += pageContent;
   htmlBody += F("<script>");
   htmlBody += scriptContent;
-  htmlBody += F("</ script>");
-  htmlBody += F("</ body> )");
+  htmlBody += F("</script>");
+  htmlBody += F("</body> )");
   return htmlBody;
 }
 void serverResponseHandler()
