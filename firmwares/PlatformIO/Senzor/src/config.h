@@ -30,7 +30,7 @@
 #define WIFI_RECONNECT_INTERVAL 500000
 //#define USE_EPRROM_WIFI_SETING
 //#define WATCHDOG_TRASHOLD 50 // number of error detected befor restart
-#define Deep_Sleep
+#define DEEP_SLEEP
 
 /*
     Pins Settings

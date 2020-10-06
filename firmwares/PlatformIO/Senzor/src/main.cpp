@@ -15,7 +15,7 @@ String apiToken = "";
   volatile unsigned long last_micros;
 #endif
 
-StaticJsonDocument<265> jsonObject;
+StaticJsonDocument<250> jsonObject;
 DeserializationError jsonError;
 WiFiClientSecure client;
 
@@ -124,6 +124,11 @@ void setup()
     return;
 
   }
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Local IP: " + WiFi.localIP().toString());
+    Serial.println("Mac: " + WiFi.macAddress());
+    Serial.println("MD5 Firmware Hash: " + ESP.getSketchMD5());
+  #endif
 
   //Check OTA Updates
   #ifdef ENABLE_OTA
@@ -141,12 +146,6 @@ void setup()
 
   jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
   jsonContent["values"]["wifi"]["unit"] = "dBm";
-
-  #ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Local IP: " + WiFi.localIP().toString());
-    Serial.println("Mac: " + WiFi.macAddress());
-    Serial.println("MD5 Firmware Hash: " + ESP.getSketchMD5());
-  #endif
 
   sendData(jsonContent, apiToken);
 }
@@ -255,7 +254,7 @@ void loop()
       #ifdef ENABLE_SERIAL_PRINT
           Serial.println("going to sleep for: " + String(minutes * 60000) +  "ms / " + String(minutes) + " minutes" );
       #endif
-      #ifdef LIGHT_PIN
+      #ifdef DEEP_SLEEP
         ESP.deepSleep(minutes * 60000); 
       #else
         delay(minutes * 60000);

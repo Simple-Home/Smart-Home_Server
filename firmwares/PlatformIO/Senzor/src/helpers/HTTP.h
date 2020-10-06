@@ -13,27 +13,28 @@ String sendHttpRequest(String requestJson, String token)
 
   int httpsCode = https.POST(requestJson);
   String payload = "";
-  Serial.println(httpsCode);
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.print("<- HTTP -" + (String) httpsCode);
+  #endif
   if (httpsCode > 0)
   {
     payload = https.getString();
     #ifdef ENABLE_SERIAL_PRINT
-      Serial.println("<-" + payload);
+      Serial.println(" - " + payload);
     #endif
   }
   https.end();
   return payload;
 }
 
-bool sendData(StaticJsonDocument<383> requestJson, String token)
+bool sendData(StaticJsonDocument<250> requestJson, String token)
 {
   requestJson["token"] = token;
   String jsonString = "";
   serializeJson(requestJson, jsonString);
   #ifdef ENABLE_SERIAL_PRINT
-    Serial.println(">-" + jsonString);
+    Serial.println("-> " + jsonString);
   #endif
-  //Serial.println(jsonString);
   String response = sendHttpRequest(jsonString, token);
 
   if (response.length() > 1)
