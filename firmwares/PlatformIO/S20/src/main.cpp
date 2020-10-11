@@ -11,9 +11,9 @@
 #endif
 
 //Pins
-#define SONOFF_RELAY 4
+#define SONOFF_RELAY 4 //12 - s20, 4 - shelly
 #define SONOFF_LED 13
-#define SONOFF_BUT 5
+#define SONOFF_BUT 5 //0 - s20, 5 - shelly
 
 //type Conversions
 const char *stringToCharArray(String Text)

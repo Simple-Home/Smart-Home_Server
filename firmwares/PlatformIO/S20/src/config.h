@@ -15,7 +15,7 @@
 //pins
 
 #ifdef WIFI_CONFIG_PAGE
-    #define CONFIG_AP_SSID "VASEK_ROOM_WALL_SWITCH_0"
+    #define CONFIG_AP_SSID "FILIP_ROOM_WALL_SWITCH_0"
     #define CONFIG_AP_PASSWOR ""
 #endif
 
