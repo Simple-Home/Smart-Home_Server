@@ -62,6 +62,11 @@ String apiUrl = "/vasek/home-update/api/endpoint";
 
 void setup()
 {
+  #ifdef DHT_PIN
+    dht.begin();
+    delay(1000);
+  #endif
+
   EEPROM.begin(100);
 
   #ifdef ENABLE_SERIAL_PRINT
@@ -186,9 +191,9 @@ void loop()
   #endif
   #ifdef DHT_PIN
     jsonContent["values"]["humi"]["value"] = (int)readTemperature(dht);
-    jsonContent["values"]["humi"]["unit"] = "";
+    jsonContent["values"]["humi"]["unit"] = "%";
     jsonContent["values"]["temp"]["value"] = (int)readHumidity(dht);
-    jsonContent["values"]["temp"]["unit"] = "";
+    jsonContent["values"]["temp"]["unit"] = "C";
   #endif
   #ifdef LIGHT_PIN
     jsonContent["values"]["light"]["value"] = readLight();
@@ -254,10 +259,12 @@ void loop()
       #ifdef ENABLE_SERIAL_PRINT
           Serial.println("going to sleep for: " + String(minutes * 60000) +  "ms / " + String(minutes) + " minutes" );
       #endif
-      #ifdef DEEP_SLEEP
-        ESP.deepSleep(minutes * 60000); 
-      #else
-        delay(minutes * 60000);
+      #ifndef RELAY1_PIN
+        #ifdef DEEP_SLEEP
+          ESP.deepSleep(minutes * 60000000); 
+        #else
+          delay(minutes * 60000);
+        #endif
       #endif
     }
   }

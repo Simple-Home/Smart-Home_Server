@@ -1,21 +1,21 @@
 #ifdef DHT_PIN
     float readTemperature(DHT dhtSenzor){
-    delay(1000);
-    float t = dhtSenzor.readTemperature();
-    if (isnan(t))  {
-        return 999;
-    } else {
-        return t;
-    }
+        delay(500);
+        float t = dhtSenzor.readTemperature(true);
+        if (isnan(t))  {
+            return 999;
+        } else {
+            return t;
+        }
     }
     float readHumidity(DHT dhtSenzor){
-    delay(1000);
-    float h = dhtSenzor.readHumidity();
-    if (isnan(h))  {
-        return 999;
-    } else {
-        return h;
-    }
+        delay(500);
+        float h = dhtSenzor.readHumidity(true);
+        if (isnan(h))  {
+            return 999;
+        } else {
+            return h;
+        }
     }
 #endif
 

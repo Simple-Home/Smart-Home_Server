@@ -14,7 +14,7 @@ String sendHttpRequest(String requestJson, String token)
   int httpsCode = https.POST(requestJson);
   String payload = "";
   #ifdef ENABLE_SERIAL_PRINT
-    Serial.print("<- HTTP -" + (String) httpsCode);
+    Serial.print("<- HTTP - " + (String) httpsCode);
   #endif
   if (httpsCode > 0)
   {
