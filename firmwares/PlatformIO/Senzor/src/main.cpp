@@ -15,7 +15,7 @@ String apiToken = "";
   volatile unsigned long last_micros;
 #endif
 
-StaticJsonDocument<265> jsonObject;
+StaticJsonDocument<250> jsonObject;
 DeserializationError jsonError;
 WiFiClientSecure client;
 
@@ -62,6 +62,11 @@ String apiUrl = "/vasek/home-update/api/endpoint";
 
 void setup()
 {
+  #ifdef DHT_PIN
+    dht.begin();
+    delay(1000);
+  #endif
+
   EEPROM.begin(100);
 
   #ifdef ENABLE_SERIAL_PRINT
@@ -120,8 +125,15 @@ void setup()
     #ifdef WIFI_CONFIG_PAGE
         serveConfigPage();
     #endif
+    delay(1000);
     return;
+
   }
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println("Local IP: " + WiFi.localIP().toString());
+    Serial.println("Mac: " + WiFi.macAddress());
+    Serial.println("MD5 Firmware Hash: " + ESP.getSketchMD5());
+  #endif
 
   //Check OTA Updates
   #ifdef ENABLE_OTA
@@ -139,12 +151,6 @@ void setup()
 
   jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
   jsonContent["values"]["wifi"]["unit"] = "dBm";
-
-  #ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Local IP: " + WiFi.localIP().toString());
-    Serial.println("Mac: " + WiFi.macAddress());
-    Serial.println("MD5 Firmware Hash: " + ESP.getSketchMD5());
-  #endif
 
   sendData(jsonContent, apiToken);
 }
@@ -185,9 +191,9 @@ void loop()
   #endif
   #ifdef DHT_PIN
     jsonContent["values"]["humi"]["value"] = (int)readTemperature(dht);
-    jsonContent["values"]["humi"]["unit"] = "";
+    jsonContent["values"]["humi"]["unit"] = "%";
     jsonContent["values"]["temp"]["value"] = (int)readHumidity(dht);
-    jsonContent["values"]["temp"]["unit"] = "";
+    jsonContent["values"]["temp"]["unit"] = "C";
   #endif
   #ifdef LIGHT_PIN
     jsonContent["values"]["light"]["value"] = readLight();
@@ -196,6 +202,10 @@ void loop()
   #ifdef PIR_PIN
     jsonContent["values"]["move"]["value"] = readMovement();
     jsonContent["values"]["move"]["unit"] = "";
+  #endif
+  #ifdef BATT_SENSE
+    jsonContent["values"]["battery"]["value"] = readBattery();
+    jsonContent["values"]["battery"]["unit"] = "v";
   #endif
 
   if (!sendData(jsonContent, apiToken))
@@ -240,8 +250,25 @@ void loop()
     commandExecution(jsonObject["command"], apiToken);
   }
 
-  if (!jsonObject["device"]["hostname"])
+  if (jsonObject["device"]["hostname"])
   {
     WiFi.hostname(stringToCharArray(jsonObject["device"]["hostname"]));
+  }
+
+  if (jsonObject["device"]["sleepTime"])
+  {
+    int minutes = jsonObject["device"]["sleepTime"];
+    if (minutes > 0) {
+      #ifdef ENABLE_SERIAL_PRINT
+          Serial.println("going to sleep for: " + String(minutes * 60000) +  "ms / " + String(minutes) + " minutes" );
+      #endif
+      #ifndef RELAY1_PIN
+        #ifdef DEEP_SLEEP
+          ESP.deepSleep(minutes * 60000000); 
+        #else
+          delay(minutes * 60000);
+        #endif
+      #endif
+    }
   }
 }

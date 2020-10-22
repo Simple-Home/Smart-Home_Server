@@ -19,6 +19,8 @@ bool waitForWifi(int timeout = 30)
     }
     #ifdef LED_PIN
       ledWaiting();
+    #else
+      delay(1000);
     #endif
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("Connecting.. status: " + String(WiFi.status()));
@@ -103,18 +105,18 @@ String scriptContent = "";
 
 String getPage()
 {
-  String htmlBody = F("< !DOCTYPE html >");
+  String htmlBody = F("<!DOCTYPE html>");
   htmlBody += F("<head>");
   htmlBody += styleContent;
   htmlBody += F("<style>");
   htmlBody += F("</style>");
-  htmlBody += F("</ head>");
-  htmlBody += F("< body >");
+  htmlBody += F("</head>");
+  htmlBody += F("<body>");
   htmlBody += pageContent;
   htmlBody += F("<script>");
   htmlBody += scriptContent;
-  htmlBody += F("</ script>");
-  htmlBody += F("</ body> )");
+  htmlBody += F("</script>");
+  htmlBody += F("</body> )");
   return htmlBody;
 }
 void serverResponseHandler()

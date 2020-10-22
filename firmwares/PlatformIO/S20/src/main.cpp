@@ -11,9 +11,9 @@
 #endif
 
 //Pins
-#define SONOFF_RELAY 4
+#define SONOFF_RELAY 4 //12 - s20, 4 - shelly
 #define SONOFF_LED 13
-#define SONOFF_BUT 5
+#define SONOFF_BUT 5 //0 - s20, 5 - shelly
 
 //type Conversions
 const char *stringToCharArray(String Text)
@@ -36,6 +36,7 @@ DeserializationError jsonError;
 WiFiClientSecure client;
 
 #ifdef WIFI_CONFIG_PAGE
+bool configPage = false;
 ESP8266WebServer server(80);
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
@@ -337,6 +338,9 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
 #ifdef ENABLE_SERIAL_PRINT
     Serial.println("Connected!");
 #endif
+#ifdef WIFI_CONFIG_PAGE
+    configPage = true;
+#endif
     return true;
   }
 #ifdef ENABLE_SERIAL_PRINT
@@ -425,15 +429,15 @@ void serverResponseHandler()
 }
 void addPageContent(String contentPart)
 {
-  pageContent += contentPart;
+  pageContent = contentPart;
 }
 void addPageStyle(String stylePart)
 {
-  styleContent += stylePart;
+  styleContent = stylePart;
 }
 void addPageScript(String scriptPart)
 {
-  scriptContent += scriptPart;
+  scriptContent = scriptPart;
 }
 void serveConfigPage()
 {
@@ -573,11 +577,16 @@ void setup()
 #endif
   sendData(jsonContent);
 }
+
 void loop()
 {
   if (!waitForWifi(1))
   {
 #ifdef WIFI_CONFIG_PAGE
+    if (configPage) {
+      serveConfigPage();
+      configPage = false;
+    }
     dnsServer.processNextRequest();
     server.handleClient();
 #endif

@@ -30,7 +30,7 @@
 #define WIFI_RECONNECT_INTERVAL 500000
 //#define USE_EPRROM_WIFI_SETING
 //#define WATCHDOG_TRASHOLD 50 // number of error detected befor restart
-#define DEEP_SLEEP
+#define Deep_Sleep
 
 /*
     Pins Settings
@@ -63,15 +63,15 @@
     Wifi Settings
 */
 #ifdef WIFI_CONFIG_PAGE
-    #define CONFIG_AP_SSID "Test_BATT"
-    #define CONFIG_AP_PASSWOR "asrassrar158"
+    #define CONFIG_AP_SSID ""
+    #define CONFIG_AP_PASSWOR ""
 #endif
 
 #ifndef USE_EPRROM_WIFI_SETING
     //oweride setting in EEPROM
-    #define WIFI_SSID "Smart-Home"
-    #define WIFI_PASSWORD "S1pjg3684dcCPTUQ"
-    #define API_TOKEN "asrassrar158"
+    #define WIFI_SSID ""
+    #define WIFI_PASSWORD ""
+    #define API_TOKEN ""
 #endif
 
 /*
