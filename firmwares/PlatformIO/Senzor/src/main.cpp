@@ -231,17 +231,14 @@ void loop()
   #endif
 
   #ifdef RELAY1_PIN
-    if ((long)(millis() - last_micros) >= SWITCH1_DEBOUNCE_INTERVAL)
+    bool serverState = jsonObject["values"]["on/off"];
+    if (serverState != state)
     {
-      bool serverState = jsonObject["values"]["on/off"];
-      if (serverState != state)
+      if (buttonPushed)
       {
-        if (buttonPushed)
-        {
-          return;
-        }
-        SetRelayState(serverState);
+        return;
       }
+      SetRelayState(serverState);
     }
   #endif
 
