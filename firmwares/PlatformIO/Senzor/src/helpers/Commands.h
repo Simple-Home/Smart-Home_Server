@@ -19,11 +19,13 @@ void commandExecution(String command, String token)
   else if (command == "update")
   {
     #ifdef ENABLE_SERIAL_PRINT
-        Serial.println("Command - Update");
+      Serial.println("Command - Update");
     #endif
-    otaHandler();
+    #ifdef ENABLE_OTA
+      otaHandler();
+    #endif
     #ifdef ENABLE_SERVER_LOGS
-        sendLogs(token);
+      sendLogs(token);
     #endif
   }
   else if (command == "null")

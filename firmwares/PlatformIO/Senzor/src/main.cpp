@@ -127,8 +127,8 @@ void setup()
     #endif
     delay(1000);
     return;
-
   }
+
   #ifdef ENABLE_SERIAL_PRINT
     Serial.println("Local IP: " + WiFi.localIP().toString());
     Serial.println("Mac: " + WiFi.macAddress());
@@ -177,7 +177,7 @@ void loop()
   }
 
   StaticJsonDocument<250> jsonContent = {};
-  #ifdef RELAY1_PIN
+  #ifdef SWITCH1_PIN
     if (buttonPushed)
     {
       jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
