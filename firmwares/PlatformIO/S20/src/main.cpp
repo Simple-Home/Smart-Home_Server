@@ -67,7 +67,6 @@ void WriteEeprom(String data, int start = 1)
   {
     EEPROM.write(start + i, data[i]);
   }
-  EEPROM.commit();
 }
 void CleanEeprom()
 {
@@ -95,7 +94,7 @@ void SetRelayState(bool relayState)
   Serial.println("Changing relay state -> " + String(relayState));
 #endif
   digitalWrite(SONOFF_RELAY, relayState);
-  EEPROM.write(0, relayState);
+  EEPROM.write(0, (int)relayState);
   EEPROM.commit();
   state = relayState;
 }
@@ -331,7 +330,9 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
   WiFi.begin(localSsid, localPasw);
   if (waitUntilConnect)
   {
+    Serial.print("test");
     waitForWifi(30);
+    Serial.print("test2");
   }
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -360,7 +361,7 @@ String wifiScan()
 #ifdef ENABLE_SERIAL_PRINT
     Serial.println("no networks found");
 #endif
-    wifiHtmlList += "<label>No networks found...</label>";
+    wifiHtmlList = "<label>No networks found...</label>";
   }
   else
   {
@@ -368,6 +369,7 @@ String wifiScan()
     Serial.print(n);
     Serial.println(" networks found");
 #endif
+    wifiHtmlList = "";
     for (int i = 0; i < n; ++i)
     {
       // Print SSID and RSSI for each network found
@@ -393,18 +395,18 @@ String scriptContent = "";
 
 String getPage()
 {
-  String htmlBody = F("< !DOCTYPE html >");
+  String htmlBody = F("<!DOCTYPE html>");
   htmlBody += F("<head>");
-  htmlBody += styleContent;
   htmlBody += F("<style>");
+  htmlBody += styleContent;
   htmlBody += F("</style>");
-  htmlBody += F("</ head>");
-  htmlBody += F("< body >");
+  htmlBody += F("</head>");
+  htmlBody += F("<body>");
   htmlBody += pageContent;
   htmlBody += F("<script>");
   htmlBody += scriptContent;
-  htmlBody += F("</ script>");
-  htmlBody += F("</ body> )");
+  htmlBody += F("</script>");
+  htmlBody += F("</body>");
   return htmlBody;
 }
 void serverResponseHandler()
@@ -420,6 +422,7 @@ void serverResponseHandler()
       WriteEeprom(ssid);
       WriteEeprom(pasw, 33);
       WriteEeprom(apiToken, 65);
+      EEPROM.commit();
       server.send(200, "application/json", "Restarting esp");
       delay(500);
       ESP.restart();
@@ -481,6 +484,9 @@ void serveConfigPage()
   body += F("</div></form>");
   addPageContent(body);
 
+  //Captive Portal
+  dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
+
   //Routing
   server.begin();
   server.on("/", []() {
@@ -490,19 +496,18 @@ void serveConfigPage()
     serverResponseHandler();
   });
 
-  //Captive Portal
-  dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
+  server.begin();
 }
 #endif
 
 //Root/Core Functions
 void ICACHE_RAM_ATTR handleInterruptFalling()
 {
-  if ((long)(micros() - last_micros) >= debouncing_time * 1000)
+  if ((long)(millis() - last_micros) >= debouncing_time)
   {
     buttonPushed = true;
     SetRelayState(!state);
-    last_micros = micros();
+    last_micros = millis();
   }
 }
 
@@ -523,6 +528,7 @@ void setup()
   WriteEeprom(WIFI_SSID, 1);
   WriteEeprom(WIFI_PASSWORD, 33);
   WriteEeprom(API_TOKEN, 65);
+  EEPROM.commit();
 #endif
 
   //read saved data
