@@ -10,7 +10,9 @@ String sendHttpRequest(String requestJson, String token)
 
   https.setRedirectLimit(1);
   https.addHeader("Content-Type", "application/json");
-
+  
+  //https.setAuthorization(); //TODO add Token Autentication use type bearer and Token like token
+  
   int httpsCode = https.POST(requestJson);
   String payload = "";
   #ifdef ENABLE_SERIAL_PRINT
