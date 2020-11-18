@@ -4,7 +4,7 @@ float readTemperature(DHT dhtSenzor)
     for (size_t i = 0; i < 10; i++)
     {
         delay(2000);
-        float t = dhtSenzor.readTemperature(true);
+        float t = dhtSenzor.readTemperature();
         if (isnan(t))
         {
             return t;
@@ -17,7 +17,7 @@ float readHumidity(DHT dhtSenzor)
     for (size_t i = 0; i < 10; i++)
     {
         delay(2000);
-        float h = dhtSenzor.readHumidity(true);
+        float h = dhtSenzor.readHumidity();
         if (isnan(h)){
             return h;
         }
