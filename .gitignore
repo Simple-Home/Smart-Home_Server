@@ -5,4 +5,6 @@ firmwares/PlatformIO/S20/include/secureInformations.
 .piolibdeps
 firmwares/PlatformIO/Senzor/src/config.h
 * (1).*
-config_*.py
+config.h
+config_*.h
+!config_example.h

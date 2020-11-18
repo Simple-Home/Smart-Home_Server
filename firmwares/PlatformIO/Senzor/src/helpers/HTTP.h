@@ -27,7 +27,7 @@ String sendHttpRequest(String requestJson, String token)
   return payload;
 }
 
-bool sendData(StaticJsonDocument<250> requestJson, String token)
+bool sendData(StaticJsonDocument<290> requestJson, String token)
 {
   requestJson["token"] = token;
   String jsonString = "";

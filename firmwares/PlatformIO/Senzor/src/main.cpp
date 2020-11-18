@@ -15,7 +15,7 @@ String apiToken = "";
   volatile unsigned long last_micros;
 #endif
 
-StaticJsonDocument<250> jsonObject;
+StaticJsonDocument<290> jsonObject;
 DeserializationError jsonError;
 WiFiClientSecure client;
 
@@ -62,19 +62,19 @@ String apiUrl = "/vasek/home-update/api/endpoint";
 
 void setup()
 {
-  #ifdef DHT_PIN
-    dht.begin();
-    delay(1000);
-  #endif
-
-  EEPROM.begin(100);
-
   #ifdef ENABLE_SERIAL_PRINT
     Serial.begin(115200);
     while (!Serial) continue;
     delay(2000);
     Serial.println("Booted-UP");
   #endif
+  
+  #ifdef DHT_PIN
+    dht.begin();
+    delay(1000);
+  #endif
+
+  EEPROM.begin(100);
 
   #ifndef USE_EPRROM_WIFI_SETING
     CleanEeprom();
@@ -144,7 +144,7 @@ void setup()
   #endif
 
   //Diag Data sendData
-  StaticJsonDocument<250> jsonContent = {};
+  StaticJsonDocument<290> jsonContent = {};
   jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
   jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
   jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
@@ -176,7 +176,7 @@ void loop()
     return;
   }
 
-  StaticJsonDocument<250> jsonContent = {};
+  StaticJsonDocument<290> jsonContent = {};
   #ifdef SWITCH1_PIN
     if (buttonPushed)
     {
