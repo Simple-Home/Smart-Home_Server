@@ -43,6 +43,9 @@ bool sendData(StaticJsonDocument<250> requestJson, String token)
     if (jsonError.code() == DeserializationError::Ok){
       return true;
     }
+    #ifdef ENABLE_SERIAL_PRINT
+      Serial.println("Json Deserialize Error: " + String(jsonError.c_str()));
+    #endif
   }
   return false;
 }
