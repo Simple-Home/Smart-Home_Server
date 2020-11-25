@@ -72,7 +72,7 @@ String wifiScan()
   #ifdef ENABLE_SERIAL_PRINT
       Serial.println("no networks found");
   #endif
-    wifiHtmlList += "<label>No networks found...</label>";
+    wifiHtmlList = "<label>No networks found...</label>";
   }
   else
   {
