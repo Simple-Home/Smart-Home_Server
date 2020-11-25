@@ -179,7 +179,7 @@ void serverResponseHandler()
   {
     if (server.args() == 3)
     {
-      //Save Static IP
+      //Save Static IP max délka jené položky je 15
     }
 
       //Config Page

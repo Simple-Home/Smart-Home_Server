@@ -86,6 +86,7 @@ void setup()
     WriteEeprom(WIFI_PASSWORD, 33);
     WriteEeprom(API_TOKEN, 65);
     #ifdef STATIC_IP_SUPPORT
+      //délka jené položky je 15
       WriteEeprom(STATIC_IP, 65);
       WriteEeprom(GATEWAY, 65);
       WriteEeprom(SUBNET, 65);
@@ -97,6 +98,7 @@ void setup()
   pasw = ReadEeprom(33, 65);
   apiToken = ReadEeprom(65, 97);
   #ifdef STATIC_IP_SUPPORT
+    //délka jené položky je 15
     staticIP = ReadEeprom(1, 33);
     gateway = ReadEeprom(33, 65);
     subnet = ReadEeprom(65, 97);
