@@ -14,7 +14,11 @@ String apiToken = "";
   bool buttonPushed = false;
   volatile unsigned long last_micros;
 #endif
-
+#ifdef STATIC_IP_SUPPORT
+    String staticIP = "";
+    String gateway = "";
+    String subnet = "";
+#endif
 StaticJsonDocument<290> jsonObject;
 DeserializationError jsonError;
 WiFiClientSecure client;
@@ -68,7 +72,7 @@ void setup()
     delay(2000);
     Serial.println("Booted-UP");
   #endif
-  
+
   #ifdef DHT_PIN
     dht.begin();
     delay(1000);
@@ -81,12 +85,22 @@ void setup()
     WriteEeprom(WIFI_SSID, 1);
     WriteEeprom(WIFI_PASSWORD, 33);
     WriteEeprom(API_TOKEN, 65);
+    #ifdef STATIC_IP_SUPPORT
+      WriteEeprom(STATIC_IP, 65);
+      WriteEeprom(GATEWAY, 65);
+      WriteEeprom(SUBNET, 65);
+    #endif
   #endif
 
   //read saved data
   ssid = ReadEeprom(1, 33);
   pasw = ReadEeprom(33, 65);
   apiToken = ReadEeprom(65, 97);
+  #ifdef STATIC_IP_SUPPORT
+    staticIP = ReadEeprom(1, 33);
+    gateway = ReadEeprom(33, 65);
+    subnet = ReadEeprom(65, 97);
+  #endif
 
   //set pins
   #ifdef LIGHT_PIN
@@ -120,14 +134,25 @@ void setup()
   #endif
 
   //Wifi Conection
-  if (!wifiConnect(ssid, pasw, true))
-  {
-    #ifdef WIFI_CONFIG_PAGE
-        serveConfigPage();
-    #endif
-    delay(1000);
-    return;
-  }
+  #ifdef STATIC_IP_SUPPORT
+    if (!setStaticIP(ssid, pasw, staticIP, gateway, subnet))
+    {
+      #ifdef WIFI_CONFIG_PAGE
+          serveConfigPage();
+      #endif
+      delay(1000);
+      return;
+    }
+  #else
+    if (!wifiConnect(ssid, pasw, true))
+    {
+      #ifdef WIFI_CONFIG_PAGE
+          serveConfigPage();
+      #endif
+      delay(1000);
+      return;
+    }
+  #endif
 
   #ifdef ENABLE_SERIAL_PRINT
     Serial.println("Local IP: " + WiFi.localIP().toString());
@@ -264,7 +289,7 @@ void loop()
       #endif
       #ifndef RELAY1_PIN
         #ifdef DEEP_SLEEP
-          ESP.deepSleep(minutes * 60000000); 
+          ESP.deepSleep(minutes * 60000000);
         #else
           delay(minutes * 60000);
         #endif

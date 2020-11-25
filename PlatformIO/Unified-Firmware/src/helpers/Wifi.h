@@ -97,6 +97,25 @@ String wifiScan()
   return wifiHtmlList;
 }
 
+#ifdef STATIC_IP_SUPPORT
+void setStaticIP(String localSsid, String localPasw, String StaticIp, String GatewayIp, String Subnet){
+  //convert ip form string to IP Format
+  if (StaticIp != "" && GatewayIp != "" && Subnet != "") {
+    IPAddress static_ip;
+    static_ip.fromString(StaticIp)
+    IPAddress gatevay_ip
+    gatevay_ip.fromString(GatewayIp)
+    IPAddress subnet
+    subnet.fromString(Subnet)
+
+    WiFi.config(StaticIp, GatewayIp, Subnet);
+    return wifiConnect(String localSsid, String localPasw, true);
+  }
+  return false;
+}
+#endif
+
+
 #ifdef WIFI_CONFIG_PAGE
 //Web Pages Functions
 String pageContent = "";
