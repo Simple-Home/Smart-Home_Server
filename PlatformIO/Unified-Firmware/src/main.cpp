@@ -78,7 +78,7 @@ void setup()
     delay(1000);
   #endif
 
-  EEPROM.begin(100);
+  EEPROM.begin(145);
 
   #ifndef USE_EPRROM_WIFI_SETING
     CleanEeprom();
@@ -87,9 +87,9 @@ void setup()
     WriteEeprom(API_TOKEN, 65);
     #ifdef STATIC_IP_SUPPORT
       //délka jené položky je 15
-      WriteEeprom(STATIC_IP, 65);
-      WriteEeprom(GATEWAY, 65);
-      WriteEeprom(SUBNET, 65);
+      WriteEeprom(STATIC_IP, 97);
+      WriteEeprom(GATEWAY, 113);
+      WriteEeprom(SUBNET, 129);
     #endif
   #endif
 
@@ -99,9 +99,9 @@ void setup()
   apiToken = ReadEeprom(65, 97);
   #ifdef STATIC_IP_SUPPORT
     //délka jené položky je 15
-    staticIP = ReadEeprom(1, 33);
-    gateway = ReadEeprom(33, 65);
-    subnet = ReadEeprom(65, 97);
+    staticIP = ReadEeprom(97, 113);
+    gateway = ReadEeprom(113, 129);
+    subnet = ReadEeprom(129, 145);
   #endif
 
   //set pins

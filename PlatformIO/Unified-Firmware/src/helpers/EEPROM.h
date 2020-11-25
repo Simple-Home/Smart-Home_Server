@@ -7,9 +7,9 @@ void WriteEeprom(String data, int start = 1)
   EEPROM.commit();
 }
 
-void CleanEeprom()
+void CleanEeprom(int plus = 0)
 {
-  for (int i = 1; i < 100; ++i)
+  for (int i = 1; i < (98 + plus); ++i)
   {
     EEPROM.write(i, 0);
   }

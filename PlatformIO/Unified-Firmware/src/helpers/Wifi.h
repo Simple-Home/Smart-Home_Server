@@ -126,8 +126,8 @@ String getPage()
 {
   String htmlBody = F("<!DOCTYPE html>");
   htmlBody += F("<head>");
-  htmlBody += styleContent;
   htmlBody += F("<style>");
+  htmlBody += styleContent;
   htmlBody += F("</style>");
   htmlBody += F("</head>");
   htmlBody += F("<body>");
@@ -135,7 +135,7 @@ String getPage()
   htmlBody += F("<script>");
   htmlBody += scriptContent;
   htmlBody += F("</script>");
-  htmlBody += F("</body> )");
+  htmlBody += F("</body>");
   return htmlBody;
 }
 void serverResponseHandler()
@@ -183,6 +183,18 @@ void serverResponseHandler()
     if (server.args() == 3)
     {
       //Save Static IP max délka jené položky je 15
+      staticIP = server.arg("static-ip");
+      subnet = server.arg("static-network");
+      gateway = server.arg("static-gateway");
+      if (staticIP != "" && subnet != "" && gateway != "") {
+        CleanEeprom(48);
+        WriteEeprom(staticIP, 97);
+        WriteEeprom(gateway, 113);
+        WriteEeprom(subnet, 129);
+        server.send(200, "application/json", "Restarting esp");
+        delay(500);
+        ESP.restart();
+      }
     }
 
       //Config Page
