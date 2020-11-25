@@ -160,6 +160,9 @@ void serverResponseHandler()
   //Config Page
   String body = "";
   body += F("<h2>WIFI Configuration</h2>");
+  #ifdef STATIC_IP_SUPPORT
+    body += F("<a href='/network'>Static IP setting</a>");
+  #endif
   body += F("<a href='#'>Refresh</a>");
   body += F("<div class=\"wifi-list\">");
   body += wifiScan();
