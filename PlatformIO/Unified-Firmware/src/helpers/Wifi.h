@@ -156,8 +156,46 @@ void serverResponseHandler()
       ESP.restart();
     }
   }
+
+  //Config Page
+  String body = "";
+  body += F("<h2>WIFI Configuration</h2>");
+  body += F("<a href='#'>Refresh</a>");
+  body += F("<div class=\"wifi-list\">");
+  body += wifiScan();
+  body += F("</div>");
+  body += F("<form method='get' action=''><div class='wifi-form'>");
+  body += F("<label>SSID: </label><input name='wifi-ssid' id='wifi-ssid' length=32 type='text'><br>");
+  body += F("<label>Heslo: </label><input name='wifi-pasw' length=32 type='password'><br>");
+  body += F("<label>Api token: </label><input name='apiToken' id='api-token' length=32 type='password'><br>");
+  body += F("<input type='submit' value='Connect'>");
+  body += F("</div></form>");
+  addPageContent(body);
+
   server.send(200, "text/html", getPage());
 }
+#ifdef STATIC_IP_SUPPORT
+  void serverNetworkSettingResponseHandler()
+  {
+    if (server.args() == 3)
+    {
+      //Save Static IP
+    }
+
+      //Config Page
+      String body = "";
+      body += F("<h2>Network Configuration</h2>");
+      body += F("<form method='get' action=''><div class='wifi-form'>");
+      body += F("<label>Static IP: </label><input name='static-ip' type='text' minlength='7' maxlength='15' size='15' pattern='^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$'><br>");
+      body += F("<label>Network: </label><input name='static-network' type='text' minlength='7' maxlength='15' size='15' pattern='^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$'><br>");
+      body += F("<label>gateway: </label><input name='static-gateway' type='text' minlength='7' maxlength='15' size='15' pattern='^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$'><br>");
+      body += F("<input type='submit' value='Save'>");
+      body += F("</div></form>");
+      addPageContent(body);
+
+    server.send(200, "text/html", getPage());
+  }
+#endif
 void addPageContent(String contentPart)
 {
   pageContent += contentPart;
@@ -199,6 +237,8 @@ void serveConfigPage()
   scripts += F("document.getElementById(\"api-token\").value = Math.random().toString(36).replace(/[^a-z0-9]+/g, '').substr(1, 12);\r\n");
   addPageScript(scripts);
 
+
+
   String body = "";
   body += F("<h2>WIFI Configuration</h2>");
   body += F("<a href='#'>Refresh</a>");
@@ -221,6 +261,12 @@ void serveConfigPage()
   server.onNotFound([]() {
     serverResponseHandler();
   });
+
+  #ifdef STATIC_IP_SUPPORT
+    server.on("/network", []() {
+      serverNetworkSettingResponseHandler();
+    });
+  }
 
   //Captive Portal
   dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
