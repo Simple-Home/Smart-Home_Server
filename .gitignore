@@ -8,3 +8,4 @@ firmwares/PlatformIO/Senzor/src/config.h
 config.h
 config_*.h
 !config_example.h
+debug.log
