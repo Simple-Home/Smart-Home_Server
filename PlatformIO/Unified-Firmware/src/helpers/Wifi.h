@@ -217,18 +217,21 @@ void serverResponseHandler()
 #endif
 void addPageContent(String contentPart)
 {
-  pageContent = contentPart;
+  pageContent += contentPart;
 }
 void addPageStyle(String stylePart)
 {
-  styleContent = stylePart;
+  styleContent += stylePart;
 }
 void addPageScript(String scriptPart)
 {
-  scriptContent = scriptPart;
+  scriptContent += scriptPart;
 }
 void serveConfigPage()
 {
+  pageContent = "";
+  styleContent = "";
+  scriptContent = "";
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
   WiFi.softAPdisconnect(true);
