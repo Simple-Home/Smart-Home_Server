@@ -53,6 +53,9 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("Connected!");
     #endif
+    #ifdef WIFI_CONFIG_PAGE
+      configPage = true;
+    #endif
     return true;
   }
   #ifdef ENABLE_SERIAL_PRINT
@@ -80,6 +83,7 @@ String wifiScan()
       Serial.print(n);
       Serial.println(" networks found");
   #endif
+    wifiHtmlList = "";
     for (int i = 0; i < n; ++i)
     {
       // Print SSID and RSSI for each network found
@@ -213,15 +217,15 @@ void serverResponseHandler()
 #endif
 void addPageContent(String contentPart)
 {
-  pageContent += contentPart;
+  pageContent = contentPart;
 }
 void addPageStyle(String stylePart)
 {
-  styleContent += stylePart;
+  styleContent = stylePart;
 }
 void addPageScript(String scriptPart)
 {
-  scriptContent += scriptPart;
+  scriptContent = scriptPart;
 }
 void serveConfigPage()
 {

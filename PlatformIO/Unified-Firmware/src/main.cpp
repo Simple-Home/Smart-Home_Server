@@ -27,6 +27,7 @@ WiFiClientSecure client;
   DHT dht(DHT_PIN, DHT_TYPLE);
 #endif
 #ifdef WIFI_CONFIG_PAGE
+  bool configPage = false;
   ESP8266WebServer server(80);
   const byte DNS_PORT = 53;
   DNSServer dnsServer;
@@ -189,6 +190,10 @@ void loop()
   if (!waitForWifi(1))
   {
     #ifdef WIFI_CONFIG_PAGE
+        if (configPage) {
+          serveConfigPage();
+          configPage = false;
+        }
         dnsServer.processNextRequest();
         server.handleClient();
     #endif
