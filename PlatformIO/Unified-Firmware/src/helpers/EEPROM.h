@@ -13,6 +13,7 @@ void CleanEeprom(int plus = 0)
   {
     EEPROM.write(i, 0);
   }
+  EEPROM.commit();
 }
 
 String ReadEeprom(int min, int max)

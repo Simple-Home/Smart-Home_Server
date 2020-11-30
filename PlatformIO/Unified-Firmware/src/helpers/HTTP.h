@@ -10,7 +10,7 @@ String sendHttpRequest(String requestJson, String token)
 
   https.setRedirectLimit(1);
   https.addHeader("Content-Type", "application/json");
-
+  
   int httpsCode = https.POST(requestJson);
   String payload = "";
   #ifdef ENABLE_SERIAL_PRINT
@@ -27,7 +27,7 @@ String sendHttpRequest(String requestJson, String token)
   return payload;
 }
 
-bool sendData(StaticJsonDocument<290> requestJson, String token)
+bool sendData(DynamicJsonDocument requestJson, String token)
 {
   requestJson["token"] = token;
   String jsonString = "";

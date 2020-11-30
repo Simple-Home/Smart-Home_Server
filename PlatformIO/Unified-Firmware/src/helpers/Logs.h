@@ -14,8 +14,9 @@
   {
     if (logs != "")
     {
-      StaticJsonDocument<290> jsonContent = {};
+      DynamicJsonDocument jsonContent(259);
       jsonError = deserializeJson(jsonContent, "{\"logs\":[" + logs + "]}");
+
       if (jsonError.code() == DeserializationError::Ok){
         return sendData(jsonContent, apiToken);
       }

@@ -102,18 +102,18 @@ String wifiScan()
 }
 
 #ifdef STATIC_IP_SUPPORT
-void setStaticIP(String localSsid, String localPasw, String StaticIp, String GatewayIp, String Subnet){
+bool setStaticIP(String localSsid, String localPasw, String StaticIp, String GatewayIp, String Subnet){
   //convert ip form string to IP Format
   if (StaticIp != "" && GatewayIp != "" && Subnet != "") {
     IPAddress static_ip;
-    static_ip.fromString(StaticIp)
-    IPAddress gatevay_ip
-    gatevay_ip.fromString(GatewayIp)
-    IPAddress subnet
-    subnet.fromString(Subnet)
+    static_ip.fromString(StaticIp);
+    IPAddress gatevay_ip;
+    gatevay_ip.fromString(GatewayIp);
+    IPAddress subnet;
+    subnet.fromString(Subnet);
 
-    WiFi.config(StaticIp, GatewayIp, Subnet);
-    return wifiConnect(String localSsid, String localPasw, true);
+    WiFi.config(static_ip, gatevay_ip, subnet);
+    return wifiConnect(localSsid, localPasw, true);
   }
   return false;
 }
@@ -125,6 +125,12 @@ void setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
   String pageContent = "";
   String styleContent = "";
   String scriptContent = "";
+  bool initPage(){
+      pageContent = "";
+      styleContent = "";
+      scriptContent = "";
+      return true;
+  }
 
   String getPage()
   {
@@ -143,7 +149,24 @@ void setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
     return htmlBody;
   }
 
-  #ifdef STATIC_IP_SUPPORT
+  void addPageContent(String contentPart, bool oweride = true)
+  {
+    if (oweride){
+      pageContent += contentPart;
+    } else {
+      pageContent = contentPart;
+    }
+  }
+  void addPageStyle(String stylePart)
+  {
+    styleContent += stylePart;
+  }
+  void addPageScript(String scriptPart)
+  {
+    scriptContent += scriptPart;
+  }
+  
+#ifdef STATIC_IP_SUPPORT
     void serverNetworkSettingResponseHandler()
     {
       if (server.args() == 3)
@@ -167,9 +190,9 @@ void setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
         String body = "";
         body += F("<h2>Network Configuration</h2>");
         body += F("<form method='get' action=''><div class='wifi-form'>");
-        body += F("<label>Static IP: </label><input name='static-ip' type='text' minlength='7' maxlength='15' size='15' pattern='^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$'><br>");
-        body += F("<label>Network: </label><input name='static-network' type='text' minlength='7' maxlength='15' size='15' pattern='^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$'><br>");
-        body += F("<label>gateway: </label><input name='static-gateway' type='text' minlength='7' maxlength='15' size='15' pattern='^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$'><br>");
+        body += F("<label>Static IP: </label><input name='static-ip' type='text' minlength='7' maxlength='15' size='15' pattern='^((\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])$'><br>");
+        body += F("<label>Network: </label><input name='static-network' type='text' minlength='7' maxlength='15' size='15' pattern='^((\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])$'><br>");
+        body += F("<label>gateway: </label><input name='static-gateway' type='text' minlength='7' maxlength='15' size='15' pattern='^((\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])$'><br>");
         body += F("<input type='submit' value='Save'>");
         body += F("</div></form>");
         addPageContent(body);
@@ -177,19 +200,8 @@ void setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
       server.send(200, "text/html", getPage());
     }
   #endif
-  void addPageContent(String contentPart)
-  {
-    pageContent += contentPart;
-  }
-  void addPageStyle(String stylePart)
-  {
-    styleContent += stylePart;
-  }
-  void addPageScript(String scriptPart)
-  {
-    scriptContent += scriptPart;
-  }
-    void serverResponseHandler()
+
+  void serverResponseHandler()
   {
     if (server.args() == 3)
     {
@@ -231,6 +243,9 @@ void setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
   }
   void serveConfigPage()
   {
+    #ifdef ENABLE_SERIAL_PRINT
+      Serial.println("Serving Config Page");
+    #endif
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
     WiFi.softAPdisconnect(true);
@@ -274,18 +289,13 @@ void setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
 
     //Routing
     server.begin();
-    server.on("/", []() {
-      serverResponseHandler();
-    });
-    server.onNotFound([]() {
-      serverResponseHandler();
-    });
+    server.on("/", serverResponseHandler);
+    server.onNotFound(serverResponseHandler);
 
     #ifdef STATIC_IP_SUPPORT
-      server.on("/network", []() {
-        serverNetworkSettingResponseHandler();
-      });
+      server.on("/network", serverNetworkSettingResponseHandler);
     #endif
+
     //Captive Portal
     dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
   }

@@ -19,7 +19,7 @@ String apiToken = "";
     String gateway = "";
     String subnet = "";
 #endif
-StaticJsonDocument<290> jsonObject;
+DynamicJsonDocument jsonObject(290);
 DeserializationError jsonError;
 WiFiClientSecure client;
 
@@ -172,7 +172,7 @@ void setup()
   #endif
 
   //Diag Data sendData
-  StaticJsonDocument<290> jsonContent = {};
+  DynamicJsonDocument jsonContent(259);
   jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
   jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
   jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
@@ -191,8 +191,8 @@ void loop()
   {
     #ifdef WIFI_CONFIG_PAGE
         if (configPage) {
-          serveConfigPage();
           configPage = false;
+          serveConfigPage();
         }
         dnsServer.processNextRequest();
         server.handleClient();
@@ -208,7 +208,7 @@ void loop()
     return;
   }
 
-  StaticJsonDocument<290> jsonContent = {};
+  DynamicJsonDocument jsonContent(259);
   #ifdef SWITCH1_PIN
     if (buttonPushed)
     {

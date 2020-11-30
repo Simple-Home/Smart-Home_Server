@@ -12,9 +12,9 @@ void commandExecution(String command, String token)
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("Command - Config");
     #endif
-    CleanEeprom();
+    CleanEeprom(145);
     EEPROM.commit();
-    ESP.restart();
+    ESP.reset();
   }
   else if (command == "update")
   {

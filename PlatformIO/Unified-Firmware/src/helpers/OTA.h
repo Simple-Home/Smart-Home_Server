@@ -33,7 +33,7 @@
         Serial.println("  Error: " + ESPhttpUpdate.getLastErrorString());
       #endif
       #ifdef ENABLE_SERVER_LOGS
-        addLog("HTTP_UPDATE_FAILD Error (" + (String)ESPhttpUpdate.getLastError() + ") : " + (String)ESPhttpUpdate.getLastErrorString().c_str());
+        addLog("HTTP_UPDATE_FAILD code" + (String)ESPhttpUpdate.getLastError() + " message" + (String)ESPhttpUpdate.getLastErrorString().c_str());
       #endif
       break;
 
