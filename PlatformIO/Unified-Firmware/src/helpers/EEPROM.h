@@ -7,13 +7,15 @@ void WriteEeprom(String data, int start = 1)
   EEPROM.commit();
 }
 
-void CleanEeprom(int plus = 0)
+void CleanEeprom(int plus = 0, bool force = false)
 {
   for (int i = 1; i < (98 + plus); ++i)
   {
     EEPROM.write(i, 0);
   }
-  EEPROM.commit();
+  if (true){
+    EEPROM.commit();
+  }
 }
 
 String ReadEeprom(int min, int max)
