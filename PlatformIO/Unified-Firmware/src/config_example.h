@@ -35,6 +35,13 @@
 
 /*
     Pins Settings
+    RELAY:
+        12 - s20, 
+        4 - shelly
+    
+    Switch:
+        0 - s20, 
+        5 - shelly
 */
 //#define LED_PIN 1
 //#define SWITCH1_PIN 1
