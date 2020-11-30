@@ -14,9 +14,14 @@
   {
     if (logs != "")
     {
-      StaticJsonDocument<250> jsonContent = {};
-      deserializeJson(jsonContent, "{\"logs\":[" + logs + "]}");
-      return sendData(jsonContent, apiToken);
+      StaticJsonDocument<290> jsonContent = {};
+      jsonError = deserializeJson(jsonContent, "{\"logs\":[" + logs + "]}");
+      if (jsonError.code() == DeserializationError::Ok){
+        return sendData(jsonContent, apiToken);
+      }
+      #ifdef ENABLE_SERIAL_PRINT
+        Serial.println("Json deserializeJson Error: " + String(jsonError.c_str()));
+      #endif
     }
     return false;
   }
