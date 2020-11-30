@@ -8,6 +8,7 @@ firmwares/PlatformIO/Senzor/src/config.h
 config.h
 config_*.h
 !config_example.h
+!config_adv.h
 debug.log
 PlatformIO/Unified-Firmware/.vscode/c_cpp_properties.json
 PlatformIO/Unified-Firmware/.vscode/launch.json
