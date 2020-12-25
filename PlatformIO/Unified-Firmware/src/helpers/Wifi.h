@@ -44,6 +44,7 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(localSsid, localPasw);
+
   if (waitUntilConnect)
   {
     waitForWifi(30);
@@ -229,7 +230,10 @@ bool setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
         WriteEeprom(apiToken, 65);
         server.send(200, "application/json", "Restarting esp");
         delay(500);
-        //ESP.restart();
+        #ifdef ENABLE_SERIAL_PRINT
+          Serial.println("Saving Setting to EPROM/Restarting");
+        #endif
+        ESP.restart();
       }
     }
 

@@ -31,6 +31,7 @@
 - Sonoff S20
 - ESP-01
 - NodeMcu
+- Equia EQ-3
 
 * and many more!
 

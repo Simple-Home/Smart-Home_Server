@@ -14,6 +14,9 @@ String apiToken = "";
   bool buttonPushed = false;
   volatile unsigned long last_micros;
 #endif
+#if defined(ROTARY_ENC_PIN_1) && defined(ROTARY_ENC_PIN_2)
+  float lastTemperature = 0;
+#endif
 #ifdef STATIC_IP_SUPPORT
     String staticIP = "";
     String gateway = "";
@@ -82,7 +85,7 @@ void setup()
   EEPROM.begin(145);
 
   #ifndef USE_EPRROM_WIFI_SETING
-    CleanEeprom();
+    CleanEeprom(true);
     WriteEeprom(WIFI_SSID, 1);
     WriteEeprom(WIFI_PASSWORD, 33);
     WriteEeprom(API_TOKEN, 65);
@@ -126,6 +129,10 @@ void setup()
       SetRelayState(false);
     #endif
   #endif
+  #if defined(ROTARY_ENC_PIN_1) && defined(ROTARY_ENC_PIN_2)
+    pinMode(ROTARY_ENC_PIN_1, OUTPUT);
+    pinMode(ROTARY_ENC_PIN_2, OUTPUT);
+  #endif   
   #ifdef SWITCH1_PIN
     pinMode(SWITCH1_PIN, INPUT);
     #ifdef MOMENTARY_SWITCH
@@ -277,6 +284,14 @@ void loop()
     }
   #endif
 
+  #if defined(ROTARY_ENC_PIN_1) && defined(ROTARY_ENC_PIN_2)
+      int temperature = jsonObject["values"]["temp_cont"];
+      if (lastTemperature != temperature) {
+        setTemperature(temperature);
+        lastTemperature = temperature;
+      }
+  #endif
+
   if (jsonObject.containsKey("command"))
   {
     commandExecution(jsonObject["command"], apiToken);
@@ -294,7 +309,7 @@ void loop()
       #ifdef ENABLE_SERIAL_PRINT
           Serial.println("going to sleep for: " + String(minutes * 60000) +  "ms / " + String(minutes) + " minutes" );
       #endif
-      #ifndef RELAY1_PIN
+      #if !defined(RELAY1_PIN) && !defined(ROTARY_ENC_PIN_1) && !defined(ROTARY_ENC_PIN_2)
         #ifdef DEEP_SLEEP
           ESP.deepSleep(minutes * 60000000);
         #else

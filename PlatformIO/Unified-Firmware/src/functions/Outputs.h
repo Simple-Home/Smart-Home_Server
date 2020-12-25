@@ -28,3 +28,30 @@
         }
     }
 #endif
+
+#if defined(ROTARY_ENC_PIN_1) && defined(ROTARY_ENC_PIN_2)
+    void setTemperature(float temp) {
+        int z = 0;
+        // Set temperature to OFF
+        for(uint8_t i = 0; i < 60; ++i) {
+            digitalWrite(ROTARY_ENC_PIN_2, z);
+            delay(30);
+            digitalWrite(ROTARY_ENC_PIN_1, z);
+            delay(30);
+
+            z = (z+1) % 2;
+        }
+
+        /* Substract 4.5 from the given temperature to compute the number of steps
+        * required to set the desired temperature, as the temperature directly jumps
+        * from OFF tp 5C. */
+        for(uint8_t i = 0; i < (temp-4.5)*2; ++i) {
+            digitalWrite(ROTARY_ENC_PIN_1, z);
+            delay(30);
+            digitalWrite(ROTARY_ENC_PIN_2, z);
+            delay(30);
+
+            z = (z+1) % 2;
+        }
+    }
+#endif
