@@ -229,9 +229,9 @@ void loop()
     }
   #endif
   #ifdef DHT_PIN
-    jsonContent["values"]["humi"]["value"] = (int)readTemperature(dht);
+    jsonContent["values"]["humi"]["value"] = (int)dht.readHumidity();
     jsonContent["values"]["humi"]["unit"] = "%";
-    jsonContent["values"]["temp"]["value"] = (int)readHumidity(dht);
+    jsonContent["values"]["temp"]["value"] = (int)dht.readTemperature();
     jsonContent["values"]["temp"]["unit"] = "C";
   #endif
   #ifdef LIGHT_PIN
