@@ -31,7 +31,7 @@ bool waitForWifi(int timeout = 30)
 }
 bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = false)
 {
-  WiFi.persistent(false);
+  WiFi.persistent(true);
   #ifdef ENABLE_SERIAL_PRINT
     Serial.print("SSID:");
     Serial.print(localSsid);
@@ -167,7 +167,7 @@ bool setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
   {
     scriptContent += scriptPart;
   }
-  
+
 #ifdef STATIC_IP_SUPPORT
     void serverNetworkSettingResponseHandler()
     {
@@ -253,7 +253,7 @@ bool setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
     body += F("<label>Api token: </label><input name='apiToken' id='api-token' length=32 type='password'><br>");
     body += F("<input type='submit' value='Connect'>");
     body += F("</div></form>");
-    
+
     addPageContent(body, true);
 
     server.send(200, "text/html", getPage());

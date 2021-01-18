@@ -12,8 +12,9 @@ String apiToken = "";
 #ifdef  RELAY1_PIN
   bool state = false;
   bool buttonPushed = false;
-  volatile unsigned long last_micros;
+  volatile unsigned long last_micros = 0;
 #endif
+  volatile unsigned long last_micros_wifi = 0;
 #if defined(ROTARY_ENC_PIN_1) && defined(ROTARY_ENC_PIN_2)
   float lastTemperature = 0;
 #endif
@@ -132,7 +133,7 @@ void setup()
   #if defined(ROTARY_ENC_PIN_1) && defined(ROTARY_ENC_PIN_2)
     pinMode(ROTARY_ENC_PIN_1, OUTPUT);
     pinMode(ROTARY_ENC_PIN_2, OUTPUT);
-  #endif   
+  #endif
   #ifdef SWITCH1_PIN
     pinMode(SWITCH1_PIN, INPUT);
     #ifdef MOMENTARY_SWITCH
@@ -205,14 +206,18 @@ void loop()
         server.handleClient();
     #endif
 
-    waity++;
-    if (waity > WIFI_RECONNECT_INTERVAL)
-    {
-      waity = 0;
+
+    if ((long)(millis() - last_micros_wifi) >= WIFI_RECONNECT_INTERVAL) {
       wifiConnect(ssid, pasw);
+      #ifdef ENABLE_SERIAL_PRINT
+        Serial.println("Conecting Back to WI-FI");
+      #endif
+      last_micros = millis();
+      delay(1);
+      return;
     }
-    delay(1);
-    return;
+  } else {
+    last_micros = 0;
   }
 
   DynamicJsonDocument jsonContent(259);

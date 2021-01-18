@@ -27,7 +27,7 @@
 */
 #define ENABLE_OTA
 #define WIFI_CONFIG_PAGE
-#define WIFI_RECONNECT_INTERVAL 500000
+#define WIFI_RECONNECT_INTERVAL 1000
 //#define USE_EPRROM_WIFI_SETING
 //#define WATCHDOG_TRASHOLD 50 // number of error detected befor restart
 #define Deep_Sleep
@@ -36,11 +36,11 @@
 /*
     Pins Settings
     RELAY:
-        12 - s20, 
+        12 - s20,
         4 - shelly
-    
+
     Switch:
-        0 - s20, 
+        0 - s20,
         5 - shelly
 */
 //#define LED_PIN 1
