@@ -28,7 +28,7 @@
 #define ENABLE_OTA
 #define WIFI_CONFIG_PAGE
 #define WIFI_RECONNECT_INTERVAL 1000
-//#define USE_EPRROM_WIFI_SETING
+//#define ENCODE_WIFI_SETING_TO_CODE
 //#define WATCHDOG_TRASHOLD 50 // number of error detected befor restart
 #define Deep_Sleep
 #define STATIC_IP_SUPPORT
@@ -75,7 +75,7 @@
     #define CONFIG_AP_PASSWOR ""
 #endif
 
-#ifndef USE_EPRROM_WIFI_SETING
+#ifndef ENCODE_WIFI_SETING_TO_CODE
     //oweride setting in EEPROM
     #define WIFI_SSID ""
     #define WIFI_PASSWORD ""

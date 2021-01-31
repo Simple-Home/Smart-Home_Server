@@ -9,12 +9,24 @@ void commandExecution(String command, String token)
   }
   else if (command == "config")
   {
-    #ifdef ENABLE_SERIAL_PRINT
-        Serial.println("Command - Config");
+    #ifndef ENCODE_WIFI_SETING_TO_CODE
+      #ifdef ENABLE_SERIAL_PRINT
+          Serial.println("Command - Config");
+      #endif
+
+      //Delete Persistent WifiSetting
+      WiFi.persistent(false);
+      ESP.flashEraseSector(0x3fe);
+
+      CleanEeprom(145);
+      SaveEeprom();
+      ESP.reset();
+    #else
+      #ifdef ENABLE_SERIAL_PRINT
+          Serial.println("EEPROM - not supported with Hardcodet credential");
+          Serial.println("EEPROM - uncoment ENCODE_WIFI_SETING_TO_CODE");
+      #endif
     #endif
-    CleanEeprom(145, true);
-    EEPROM.commit();
-    ESP.reset();
   }
   else if (command == "update")
   {

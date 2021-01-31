@@ -1,4 +1,4 @@
-void WriteEeprom(String data, int start = 1)
+void WriteEeprom(String data, int start = 1, bool force = false)
 {
   for (int i = 0; i < (int)data.length(); ++i)
   {
@@ -8,7 +8,9 @@ void WriteEeprom(String data, int start = 1)
     #endif
     delay(100);
   }
-  EEPROM.commit();
+  if (true){
+    EEPROM.commit();
+  }
 }
 
 void CleanEeprom(int plus = 0, bool force = false)
@@ -34,4 +36,12 @@ String ReadEeprom(int min, int max)
     localString += char(EEPROM.read(i));
   }
   return localString;
+}
+
+void SaveEeprom(){
+  bool status = EEPROM.commit();
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.println((status) ? "EEPROM - Commit OK" : "EEPROM - Commit failed");
+  #endif
+  EEPROM.end();
 }

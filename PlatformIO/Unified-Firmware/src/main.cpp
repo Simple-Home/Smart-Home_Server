@@ -85,7 +85,7 @@ void setup()
 
   EEPROM.begin(145);
 
-  #ifndef USE_EPRROM_WIFI_SETING
+  #ifdef ENCODE_WIFI_SETING_TO_CODE
     CleanEeprom(true);
     WriteEeprom(WIFI_SSID, 1);
     WriteEeprom(WIFI_PASSWORD, 33);
@@ -155,10 +155,13 @@ void setup()
       return;
     }
   #else
-    if (!wifiConnect(ssid, pasw, true))
+    if (!wifiConnect(ssid, pasw, true) || apiToken == "")
     {
       #ifdef WIFI_CONFIG_PAGE
           serveConfigPage();
+          #ifdef ENABLE_SERIAL_PRINT
+            Serial.println("Config page starting from SETUP()");
+          #endif
       #endif
       delay(1000);
       return;
@@ -179,16 +182,8 @@ void setup()
     #endif
   #endif
 
-  //Diag Data sendData
-  DynamicJsonDocument jsonContent(259);
-  jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
-  jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
-  jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
-
-  jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
-  jsonContent["values"]["wifi"]["unit"] = "dBm";
-
-  sendData(jsonContent, apiToken);
+  //Send Diag Data to Server
+  sendDiag();
 }
 void loop()
 {
@@ -205,19 +200,25 @@ void loop()
         dnsServer.processNextRequest();
         server.handleClient();
     #endif
+    
+    #ifdef ENABLE_SERIAL_PRINT
+      Serial.println(String(configPage) + "last time reconecr happen" + String(((long)millis() - last_micros_wifi)));
+      Serial.println(String(configPage) + "last time reconecr happen" + String(WIFI_RECONNECT_INTERVAL));
+    #endif
 
-
-    if ((long)(millis() - last_micros_wifi) >= WIFI_RECONNECT_INTERVAL) {
+    if (((long)millis() - last_micros_wifi) >= WIFI_RECONNECT_INTERVAL) {
       wifiConnect(ssid, pasw);
       #ifdef ENABLE_SERIAL_PRINT
         Serial.println("Conecting Back to WI-FI");
       #endif
-      last_micros = millis();
+      last_micros_wifi = millis();
       delay(1);
-      return;
     }
+    return;
+        Serial.println("test");
+
   } else {
-    last_micros = 0;
+    last_micros_wifi = 0;
   }
 
   DynamicJsonDocument jsonContent(259);
@@ -323,4 +324,14 @@ void loop()
       #endif
     }
   }
+}
+
+void sendDiag(){
+  DynamicJsonDocument jsonContent(259);
+  jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
+  jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
+  jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
+  jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
+  jsonContent["values"]["wifi"]["unit"] = "dBm";
+  sendData(jsonContent, apiToken);
 }
