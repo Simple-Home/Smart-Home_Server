@@ -293,14 +293,14 @@ bool setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
     addPageScript(scripts);
 
     //Routing
-    server.begin();
     server.on("/", serverResponseHandler);
     server.onNotFound(serverResponseHandler);
 
     #ifdef STATIC_IP_SUPPORT
       server.on("/network", serverNetworkSettingResponseHandler);
     #endif
-
+    server.begin();
+    
     //Captive Portal
     dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
   }
