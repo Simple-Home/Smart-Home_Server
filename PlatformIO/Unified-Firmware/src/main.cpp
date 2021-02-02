@@ -6,6 +6,7 @@ int waity = 0;
 String ssid = "";
 String pasw = "";
 String apiToken = "";
+bool wifiOnce = true;
 #ifdef  ENABLE_SERVER_LOGS
   String logs = "";
 #endif
@@ -68,6 +69,19 @@ String apiUrl = "/vasek/home-update/api/endpoint";
 #include <helpers/Commands.h>
 #include <helpers/Wifi.h>
 
+void sendDiag(){
+  DynamicJsonDocument jsonContent(259);
+  jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
+  jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
+  jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
+  jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
+  jsonContent["values"]["wifi"]["unit"] = "dBm";
+  sendData(jsonContent, apiToken);
+  if (jsonObject.containsKey("command"))
+  {
+    commandExecution(jsonObject["command"], apiToken);
+  }
+}
 
 void setup()
 {
@@ -324,14 +338,4 @@ void loop()
       #endif
     }
   }
-}
-
-void sendDiag(){
-  DynamicJsonDocument jsonContent(259);
-  jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
-  jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
-  jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
-  jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
-  jsonContent["values"]["wifi"]["unit"] = "dBm";
-  sendData(jsonContent, apiToken);
 }

@@ -41,9 +41,11 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
     Serial.print(localPasw);
     Serial.println(":");
   #endif
-  
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(localSsid, localPasw);
+  if (wifiOnce){
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(localSsid, localPasw);
+    wifiOnce = false;
+  }
 
   if (waitUntilConnect)
   {
@@ -54,6 +56,7 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("Connected!");
     #endif
+    wifiOnce = true;
     #ifdef WIFI_CONFIG_PAGE
       configPage = true;
     #endif
