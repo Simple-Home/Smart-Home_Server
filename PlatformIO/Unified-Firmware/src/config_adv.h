@@ -1,3 +1,4 @@
+#include <arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266HTTPClient.h>
@@ -8,6 +9,12 @@
 #ifdef WIFI_CONFIG_PAGE
     #include <ESP8266WebServer.h>
     #include <DNSServer.h>
+#endif
+
+#if defined(ENCODE_WIFI_SETING_TO_CODE) && defined(WIFI_CONFIG_PAGE)
+    #error "Define only one of ENCODE_WIFI_SETING_TO_CODE/WIFI_CONFIG_PAGE"
+    #error "ENCODE_WIFI_SETING_TO_CODE - hard Encode wifi ccredentials to Code"
+    #error "WIFI_CONFIG_PAGE - Enable usage of EEPROM"
 #endif
 
 #ifdef DHT_PIN

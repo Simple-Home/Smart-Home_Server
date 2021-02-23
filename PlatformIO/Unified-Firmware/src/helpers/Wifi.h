@@ -41,9 +41,11 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
     Serial.print(localPasw);
     Serial.println(":");
   #endif
-
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(localSsid, localPasw);
+  if (wifiOnce){
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(localSsid, localPasw);
+    wifiOnce = false;
+  }
 
   if (waitUntilConnect)
   {
@@ -54,6 +56,7 @@ bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = fal
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("Connected!");
     #endif
+    wifiOnce = true;
     #ifdef WIFI_CONFIG_PAGE
       configPage = true;
     #endif
@@ -228,6 +231,7 @@ bool setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
         WriteEeprom(ssid);
         WriteEeprom(pasw, 33);
         WriteEeprom(apiToken, 65);
+        SaveEeprom();
         server.send(200, "application/json", "Restarting esp");
         delay(500);
         #ifdef ENABLE_SERIAL_PRINT
@@ -292,14 +296,14 @@ bool setStaticIP(String localSsid, String localPasw, String StaticIp, String Gat
     addPageScript(scripts);
 
     //Routing
-    server.begin();
     server.on("/", serverResponseHandler);
     server.onNotFound(serverResponseHandler);
 
     #ifdef STATIC_IP_SUPPORT
       server.on("/network", serverNetworkSettingResponseHandler);
     #endif
-
+    server.begin();
+    
     //Captive Portal
     dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
   }
