@@ -12,6 +12,10 @@ libraries:
 Functionality:
     captive portal
     Feature local Execution over lan
+    https updates
+    Rest/Socket/Locla/MQTT ?
+    command handling (pin high low, reboot, config, update)
+    static ip setting
 
 Web portal new stiles:
     name of device
@@ -26,5 +30,7 @@ Web portal new stiles:
     static ip setting
     api setting
     wifi setting
+
+
 
 
