@@ -1,22 +1,26 @@
-les of a mahem in main.cpp
-clean readable code
+- les of a mahem in main.cpp
+- clean readable code
 
-https://github.com/squix78/json-streaming-parser
-pokud bude opravdu jeden firmvare tak
-https://github.com/yknivag/ESP_OTA_GitHub
-https:
-https://github.com/OPEnSLab-OSU/SSLClient
+libraries:
+    use difrent Json library if ArduinoJson is used use Dynamic Document
+    https://github.com/squix78/json-streaming-parser
+    pokud bude opravdu jeden firmvare tak
+    https://github.com/yknivag/ESP_OTA_GitHub
+    https:
+    https://github.com/OPEnSLab-OSU/SSLClient
 
-Functionality
+Functionality:
     captive portal
+    Feature local Execution over lan
 
 Web portal new stiles:
     name of device
 
-    control board 
+    control board:
         - show senzors
         - relays 
         - etc
+    wifi_scan
     reboot button
     Countdown
     static ip setting
