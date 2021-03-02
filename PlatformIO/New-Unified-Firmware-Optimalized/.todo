@@ -1,36 +1,74 @@
 - les of a mahem in main.cpp
 - clean readable code
 
-libraries:
+Libraries:
     use difrent Json library if ArduinoJson is used use Dynamic Document
-    https://github.com/squix78/json-streaming-parser
+        + https://github.com/squix78/json-streaming-parser
     pokud bude opravdu jeden firmvare tak
-    https://github.com/yknivag/ESP_OTA_GitHub
+        + https://github.com/yknivag/ESP_OTA_GitHub
     https:
-    https://github.com/OPEnSLab-OSU/SSLClient
+        + https://github.com/OPEnSLab-OSU/SSLClient
 
 Functionality:
-    captive portal
-    Feature local Execution over lan
-    https updates
-    Rest/Socket/Locla/MQTT ?
-    command handling (pin high low, reboot, config, update)
-    static ip setting
+    Source Code:
+        - Config files
+        - use Compiler tags
+            <# #ifdef ENABLE_SERIAL_PRINT #>
+    Captive Portal
+    DNS Redirect to Captive Portal
+    Https OTA Update 
+    Command handling
+        - set Pin state
+        - get Pin state
+        - reboot
+        - config
+        - update
+    Save last Relay State
+    Softwate Button/Switch Debounce
+        - Macros:
+            - double push For button
+    Senzor Support
+        - DHT
+        - Photo Rezistor (Digital/Analog)
+        - Battery
+        - Pin
+    Outputs
+        - Pin (Rele, led ETC)
+    Logs
+        - Serial Line
+        - Server (if Wifi)
+    Watchdog:
+        - count exeption and error and restart if needet
+    Timed Reboot:
+        - Reboot on certain time (pevent bugs)
 
-Web portal new stiles:
-    name of device
 
-    control board:
-        - show senzors
-        - relays 
-        - etc
-    wifi_scan
-    reboot button
-    Countdown
-    static ip setting
-    api setting
-    wifi setting
+Captive portal:
+    New stile of client app (Green#White)
+    Device name of device (From Eprom else Default)
+    Control Panel:
+        - Control of Relay
+        - Show Senzor State 
+    List of discovered WIFI:
+        - Show Signal Strength
+        - Show If thy are Free/Secured
+    Reboot Device
+    Countdown until restart (JS)
+    API Setting:
+        - Token (if not filled) generate (by js) if filled load from eprom 
+    Wi-Fi:
+        - SSID
+        - Password
+    Network:
+        - Static IP
+        - Gatevay
+        - Subnet
+        - DNS
 
+Back Log:
+    #Feature: local Execution over lan
+    #Feature: Socket/Locla/MQTT ?
+    #Feature: Save settings after initial conect ot filesystem
 
 
 
