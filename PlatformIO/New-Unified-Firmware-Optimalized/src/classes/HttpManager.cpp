@@ -33,13 +33,18 @@ bool HttpManager::send(char* requiresBody)
         return false
     }
 
-    char* payload = this->https.getString();
+    this->payload = this->https.getString();
     #ifdef ENABLE_SERIAL_PRINT
         Serial.print("HttpManager<-" + (String) httpsCode);
-        Serial.print("HttpManager<-" + (String) payload);
+        Serial.print("HttpManager<-" + (String) this->payload);
     #endif
  
-    return payload;
+    return true;
+}
+
+string HttpManager::getPayload()
+{   
+    return this->payload;
 }
 
 bool HttpManager::disconect()

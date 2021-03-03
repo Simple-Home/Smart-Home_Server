@@ -1,5 +1,6 @@
-#include <Arduino.h>
 #include "config.h"
+#include <Arduino.h>
+
 #include "classes/EepromManager.h"
 #include "classes/WifiManager.h"
 #include "classes/HttpManager.h"
@@ -13,8 +14,8 @@ void setup() {
     while (!Serial) continue;
   #endif
   if (true) {
-    eeprom_storage.write("SSID", 1);
-    eeprom_storage.write("Password", 33);
+    eeprom_storage.write(SSID, 1);
+    eeprom_storage.write(PASSWD, 33);
   }
 }
 

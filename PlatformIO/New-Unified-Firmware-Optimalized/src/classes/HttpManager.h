@@ -15,10 +15,11 @@ class HttpManager{
         WiFiClientSecure client;
 
     public:
-        HttpManager();
+        HttpManager(char* host, char* port, char* url, char* token);
         bool connect();
-        bool send();
+        bool send(char* requiresBody);
         bool disconect();
+        char* getPayload();
 };
 
 #endif
