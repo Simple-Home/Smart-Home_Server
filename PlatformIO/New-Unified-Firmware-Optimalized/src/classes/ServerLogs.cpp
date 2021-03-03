@@ -4,7 +4,7 @@ ServerLogs::ServerLogs(){
     this->payload = "";
 }
 
-void ServerLogs::add(char* msg)
+void ServerLogs::add(char msg[])
 {
     this->payload += msg;
 }
