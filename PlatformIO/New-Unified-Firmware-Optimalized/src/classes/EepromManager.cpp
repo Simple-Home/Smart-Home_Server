@@ -5,7 +5,7 @@ EepromManager::EepromManager()
     EEPROM.begin(145);
 }
 
-void EepromManager::write(char* data, int startAddr = 1)
+void EepromManager::write(char* data, int startAddr)
 {
     for (int i = 0; i < (int)data.length(); ++i)
     {
@@ -17,7 +17,7 @@ void EepromManager::write(char* data, int startAddr = 1)
     }
 }
 
-char* EepromManager::read(int startAddr = 1, int endAddr = 1)
+char* EepromManager::read(int startAddr, int endAddr)
 {
     if (startAddr <  endAddr) {
         return false;
@@ -33,7 +33,7 @@ char* EepromManager::read(int startAddr = 1, int endAddr = 1)
     return localString;
 }
 
-void EepromManager::erase(int startAddr = 1, int endAddr = 1)
+void EepromManager::erase(int startAddr, int endAddr)
 {
     for (int i = startAddr; i < (98 + endAddr); ++i)
     {

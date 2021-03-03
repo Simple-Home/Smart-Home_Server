@@ -1,6 +1,6 @@
 #include "WifiManager.h"
 
-bool WifiManager::check(int timeout = 30) {
+bool WifiManager::check(int timeout) {
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println(_F("Wifi-Waiting"));
     #endif
@@ -27,7 +27,7 @@ bool WifiManager::check(int timeout = 30) {
     return false;
 }
 
-void WifiManager::connect(char* ssid = "", char* password = "") {
+void WifiManager::connect(char* ssid, char* password) {
     if (ssid == "") {
         ssid = this->ssid;
     }
