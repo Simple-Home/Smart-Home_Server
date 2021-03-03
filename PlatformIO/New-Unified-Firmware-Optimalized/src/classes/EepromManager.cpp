@@ -9,7 +9,7 @@ void EepromManager::write(String data, int startAddr = 1)
 {
     for (int i = 0; i < (int)data.length(); ++i)
     {
-        EEPROM.write(start + i, data[i]);
+        EEPROM.write(startAddr + i, data[i]);
         #ifdef ENABLE_SERIAL_PRINT
             Serial.println("Writing EEPROM" + data[i]);
         #endif
@@ -22,8 +22,8 @@ char* EepromManager::read(int startAddr = 1, int endAddr = 1)
     if (startAddr <  endAddr) {
         return false;
     }
-    String localString;
-    for (int i = min; i < max; ++i)
+    char* localString;
+    for (int i = startAddr; i < endAddr; ++i)
     {
         if (EEPROM.read(i) == 0)
             break;

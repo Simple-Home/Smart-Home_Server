@@ -30,8 +30,8 @@ void loop() {
     String token = eeprom_storage.read(65, 97);
     HttpManager http_conection("https://dev.steelants.cz", "", "/vasek/home-milanin/api/v2/endpoint", token);
     if (http_conection.connect()){
-      String response = http_conection.send();
-      //main loop
+      http_conection.send("test");
+      char* payload = http_conection.getPayload();
       http_conection.disconect();
     }
   }
