@@ -13,8 +13,8 @@ void ServerLogs::add(String msg)
 bool ServerLogs::send()
 {
     //if payload is not empty
-    if (this->payload){
+    //if (this->payload){
         //send payload to server
-    }
+    //}
     return false;
 }

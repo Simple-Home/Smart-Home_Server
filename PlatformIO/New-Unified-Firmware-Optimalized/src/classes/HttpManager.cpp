@@ -8,13 +8,14 @@ HttpManager::HttpManager(char* host, char* port, char* url, char* token){
     this->token = token;
 }
 
-bool HttpManager::connect()
+void HttpManager::connect()
 {
-    this->https.begin(this->client, String(this->host + this->url));
+    //retrun true false
+    this->https.begin(this->client, String(this->host) + String(this->url));
     this->https.setReuse(true);
     this->https.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
     this->https.setRedirectLimit(1);
-    client.addHeader("Authorization","Bearer " + String(this->token));
+    this->https..addHeader("Authorization","Bearer " + String(this->token));
     this->https.addHeader("Content-Type", "application/json");
 
     #ifdef ENABLE_SERIAL_PRINT
@@ -28,7 +29,7 @@ bool HttpManager::send(char* requiresBody)
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("HttpManager->" + requiresBody);
     #endif
-    int httpCode = this->httpshttps.POST(requiresBody);
+    int httpCode = this->https.POST(requiresBody);
     if (httpCode != 200){
         return false
     }
@@ -42,7 +43,7 @@ bool HttpManager::send(char* requiresBody)
     return true;
 }
 
-string HttpManager::getPayload()
+char* HttpManager::getPayload()
 {   
     return this->payload;
 }

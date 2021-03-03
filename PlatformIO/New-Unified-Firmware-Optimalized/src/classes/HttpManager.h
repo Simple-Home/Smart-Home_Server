@@ -3,11 +3,11 @@
 
 class HttpManager{
     private:
-        char* response;
+        char* payload;
         char* host;
         char* port;
         char* url;
-        char* token
+        char* token;
         HTTPClient https;
         WiFiClientSecure client;
 
