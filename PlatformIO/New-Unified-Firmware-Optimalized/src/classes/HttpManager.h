@@ -9,7 +9,7 @@
 
 class HttpManager{
     private:
-        char* payload;
+        String payload;
         char* host;
         char* port;
         char* url;
