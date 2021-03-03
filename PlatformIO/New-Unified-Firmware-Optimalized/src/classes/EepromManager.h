@@ -1,11 +1,16 @@
+#ifndef EepromManager_def
+#define EepromManager_def
+
 #include <Arduino.h>
 #include <EEPROM.h>
 
 class EepromManager{
     public:
         EepromManager();
-        void write(String data, int startAddr = 1);
+        void write(char* data, int startAddr = 1);
         char* read(int startAddr = 1, int endAddr = 1);
         void erase(int startAddr = 1, int endAddr = 1);
         bool save();
 };
+
+#endif

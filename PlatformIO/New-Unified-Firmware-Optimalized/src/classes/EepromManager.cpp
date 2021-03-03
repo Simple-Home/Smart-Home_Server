@@ -5,7 +5,7 @@ EepromManager::EepromManager()
     EEPROM.begin(145);
 }
 
-void EepromManager::write(String data, int startAddr = 1)
+void EepromManager::write(char* data, int startAddr = 1)
 {
     for (int i = 0; i < (int)data.length(); ++i)
     {
