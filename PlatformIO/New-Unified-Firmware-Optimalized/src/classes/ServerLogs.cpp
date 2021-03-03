@@ -1,19 +1,19 @@
-#include "Logs.h"
+#include "ServerLogs.h"
 
-Logs::Logs(){
-
+ServerLogs::ServerLogs(){
+    this->payload = "";
 }
 
-void Logs::add(char* msg)
+void ServerLogs::add(char* msg)
 {
-    Logs::payload += msg;
+    this->payload += msg;
 }
 
-bool Logs::send()
+bool ServerLogs::send()
 {
-    if (Logs::payload != ""){
+    if (this->payload != ""){
         DynamicJsonDocument jsonContent(259);
-        jsonError = deserializeJson(jsonContent, "{\"logs\":[" + Logs::payload + "]}");
+        DeserializationError jsonError = deserializeJson(jsonContent, "{\"logs\":[" + this->payload + "]}");
 
         if (jsonError.code() == DeserializationError::Ok){
             return /*Send To Server*/;

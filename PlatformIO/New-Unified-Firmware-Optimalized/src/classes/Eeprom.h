@@ -6,7 +6,7 @@
 
 class Eeprom{
     public:
-        Eeprom();
+        void Eeprom();
         void write();
         void read();
         bool save();
