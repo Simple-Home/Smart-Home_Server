@@ -22,7 +22,7 @@ class HttpManager{
         bool connect();
         bool send(char* requiresBody);
         void disconect();
-        char* getPayload();
+        String getPayload();
 };
 
 #endif

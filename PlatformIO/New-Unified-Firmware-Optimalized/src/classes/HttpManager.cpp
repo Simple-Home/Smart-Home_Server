@@ -45,7 +45,7 @@ bool HttpManager::send(char* requiresBody)
     return true;
 }
 
-char* HttpManager::getPayload()
+String HttpManager::getPayload()
 {   
     return this->payload;
 }
