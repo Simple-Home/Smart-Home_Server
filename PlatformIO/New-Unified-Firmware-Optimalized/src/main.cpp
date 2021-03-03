@@ -2,13 +2,13 @@
 #include "config.h"
 #include "classes/Eeprom.h"
 
-Eeprom memory();
+Eeprom epprom_storage();
 
 void setup() {
     if (false){
-      memory.erase();
-      memory.write("1",1);
-      memory.save();
+      epprom_storage.erase();
+      epprom_storage.write("1",1);
+      epprom_storage.save();
     }
 }
 

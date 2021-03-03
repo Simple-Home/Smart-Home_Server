@@ -2,12 +2,11 @@
 #define Logs
 
 #include <Arduino.h>
-#include <string.h>
 #include <ArduinoJson.h>
 
 class ServerLogs{
     private:
-        char payload = "";
+       String msg;
 
     public:
         ServerLogs();
