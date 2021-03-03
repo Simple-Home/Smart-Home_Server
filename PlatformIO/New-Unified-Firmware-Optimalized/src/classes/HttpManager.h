@@ -12,7 +12,7 @@ class HttpManager{
         char* url;
         char* token;
         HTTPClient https;
-        WiFiClientSecure client;
+        BearSSL::WiFiClientSecure client;
 
     public:
         HttpManager(char* host, char* port, char* url, char* token);

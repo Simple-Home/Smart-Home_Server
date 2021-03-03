@@ -15,7 +15,7 @@ void HttpManager::connect()
     this->https.setReuse(true);
     this->https.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
     this->https.setRedirectLimit(1);
-    this->https..addHeader("Authorization","Bearer " + String(this->token));
+    this->https.addHeader("Authorization","Bearer " + String(this->token));
     this->https.addHeader("Content-Type", "application/json");
 
     #ifdef ENABLE_SERIAL_PRINT
@@ -34,7 +34,7 @@ bool HttpManager::send(char* requiresBody)
         return false
     }
 
-    this->payload = this->https.getString();
+    this->payload = this->https.getString().toCharArray();
     #ifdef ENABLE_SERIAL_PRINT
         Serial.print("HttpManager<-" + (String) httpsCode);
         Serial.print("HttpManager<-" + (String) this->payload);

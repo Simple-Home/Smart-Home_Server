@@ -14,8 +14,8 @@ void setup() {
     while (!Serial) continue;
   #endif
   if (true) {
-    eeprom_storage.write(SSID, 1);
-    eeprom_storage.write(PASSWD, 33);
+    eeprom_storage.write(WIFI_SSID, 1);
+    eeprom_storage.write(WIFI_PASS, 33);
   }
 }
 
