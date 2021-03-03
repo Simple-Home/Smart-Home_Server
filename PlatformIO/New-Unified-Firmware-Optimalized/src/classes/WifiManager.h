@@ -7,6 +7,6 @@ class WifiManager{
         char* password;
 
     public:
-        bool check(int timeout);
-        void connect(char* ssid, char* password);
+        bool check(int timeout = 30);
+        void connect(char* ssid = "", char* password = "");
 };

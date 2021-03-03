@@ -4,8 +4,8 @@
 class EepromManager{
     public:
         EepromManager();
-        void write(String data, int startAddr);
-        char* read(int startAddr, int endAddr);
-        void erase(int startAddr, int endAddr);
+        void write(String data, int startAddr = 1);
+        char* read(int startAddr = 1, int endAddr = 1);
+        void erase(int startAddr = 1, int endAddr = 1);
         bool save();
 };
