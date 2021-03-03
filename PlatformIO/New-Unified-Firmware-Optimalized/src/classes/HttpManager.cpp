@@ -33,7 +33,7 @@ bool HttpManager::send(char* requiresBody)
     #endif
     int httpCode = this->https.POST(requiresBody);
     if (httpCode != 200){
-        return false
+        return false;
     }
 
     this->payload = this->https.getString().toCharArray();

@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
+
 
 class HttpManager{
     private:
@@ -12,7 +14,7 @@ class HttpManager{
         char* url;
         char* token;
         HTTPClient https;
-        BearSSL::WiFiClientSecure client;
+        WiFiClientSecure client;
 
     public:
         HttpManager(char* host, char* port, char* url, char* token);
