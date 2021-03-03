@@ -1,25 +1,37 @@
 #include <Arduino.h>
 #include "config.h"
-#include "classes/Eeprom.h"
+#include "classes/EepromManager.h"
+#include "classes/WifiManager.h"
+#include "classes/HttpManager.h"
 
-Eeprom epprom_storage();
+EepromManager eeprom_storage();
+WifiManager wifi_conection();
 
 void setup() {
-    if (false){
-      epprom_storage.erase();
-      epprom_storage.write("1",1);
-      epprom_storage.save();
-    }
+  #ifdef ENABLE_SERIAL_PRINT
+    Serial.begin(115200);
+    while (!Serial) continue;
+  #endif
+  if (true) {
+    eeprom_storage.write("SSID", 1);
+    eeprom_storage.write("Password", 33);
+  }
 }
 
 void loop() {
-  //connect wifi
+  wifi_conection.connect(eeprom_storage.read(1,33), eeprom_storage.read(33, 65));
   //translate server to IP and port
   //send diag to server
   //comunication ower https
 
-  while (/* wifi conected */)
+  while (wifi_conection.check())
   {
-    /* loop */
+    token = eeprom_storage.read(65, 97);
+    HttpManager http_conection("https://dev.steelants.cz", "", "/vasek/home-milanin/api/v2/endpoint", token);
+    if (http_conection.connect()){
+      String response = http_conection.send();
+      //main loop
+      http_conection.disconect();
+    }
   }
 }

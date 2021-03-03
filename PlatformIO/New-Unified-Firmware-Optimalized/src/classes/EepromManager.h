@@ -1,12 +1,12 @@
-#ifndef Eeprom
-#define Eeprom
+#ifndef EepromManager_def
+#define EepromManager_def
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "EEPROM.h"
 
-class Eeprom{
+class EepromManager{
     public:
-        Eeprom();
+        EepromManager();
         void write();
         void read();
         bool save();

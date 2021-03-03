@@ -1,11 +1,11 @@
-#include "Eeprom.h"
+#include "EepromManager.h"
 
-Eeprom::Eeprom()
+EepromManager::EepromManager()
 {
     EEPROM.begin(145);
 }
 
-void Eeprom::write(String data, int startAddr = 1)
+void EepromManager::write(String data, int startAddr = 1)
 {
     for (int i = 0; i < (int)data.length(); ++i)
     {
@@ -17,8 +17,11 @@ void Eeprom::write(String data, int startAddr = 1)
     }
 }
 
-void  Eeprom::read(int startAddr = 1, int endAddr = 1)
+void EepromManager::read(int startAddr = 1, int endAddr = 1)
 {
+    if (startAddr <  endAddr) {
+        return false;
+    }
     String localString;
     for (int i = min; i < max; ++i)
     {
@@ -30,20 +33,19 @@ void  Eeprom::read(int startAddr = 1, int endAddr = 1)
     return localString;
 }
 
-void Eeprom::erase(int startAddr = 1, int endAddr = 1)
+void EepromManager::erase(int startAddr = 1, int endAddr = 1)
 {
-    for (int i = 1; i < (98 + plus); ++i)
+    for (int i = startAddr; i < (98 + endAddr); ++i)
     {
         EEPROM.write(i, 0);
     }
 }
 
-bool Eeprom::save(int startAddr = 1, int endAddr = 1)
+bool EepromManager::save()
 {
     bool status = EEPROM.commit();
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("eeprom-commit " + ((status) ? "OK" : "failed"));
     #endif
-    EEPROM.end();
     return status;
 }
