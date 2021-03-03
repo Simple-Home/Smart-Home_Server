@@ -5,8 +5,8 @@
 #include "classes/WifiManager.h"
 #include "classes/HttpManager.h"
 
-EepromManager eeprom_storage();
-WifiManager wifi_conection();
+EepromManager eeprom_storage;
+WifiManager wifi_conection;
 
 void setup() {
   #ifdef ENABLE_SERIAL_PRINT
@@ -27,7 +27,7 @@ void loop() {
 
   while (wifi_conection.check())
   {
-    String token = eeprom_storage.read(65, 97);
+    char* token = eeprom_storage.read(65, 97);
     HttpManager http_conection("https://dev.steelants.cz", "", "/vasek/home-milanin/api/v2/endpoint", token);
     if (http_conection.connect()){
       http_conection.send("test");
