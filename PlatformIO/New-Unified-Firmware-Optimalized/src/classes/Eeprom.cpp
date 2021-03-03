@@ -45,4 +45,5 @@ Eeprom::save(int startAddr = 1, int endAddr = 1)
         Serial.println("eeprom-commit " + ((status) ? "OK" : "failed"));
     #endif
     EEPROM.end();
+    return status;
 }

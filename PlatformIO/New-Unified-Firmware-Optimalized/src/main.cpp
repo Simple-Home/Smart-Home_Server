@@ -1,8 +1,15 @@
 #include <Arduino.h>
-#include <config.h>
+#include "config.h"
+#include "classes/Eeprom.h"
+
+Eeprom memory();
 
 void setup() {
-  
+    if (false){
+      memory.erase();
+      memory.write("1",1);
+      memoty.save();
+    }
 }
 
 void loop() {
