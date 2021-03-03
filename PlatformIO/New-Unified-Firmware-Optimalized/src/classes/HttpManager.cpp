@@ -36,7 +36,7 @@ bool HttpManager::send(char* requiresBody)
         return false;
     }
 
-    this->payload = this->https.getString().toCharArray();
+    this->payload = (this->https.getString()).c_str();
     #ifdef ENABLE_SERIAL_PRINT
         Serial.print("HttpManager<-" + (String) httpsCode);
         Serial.print("HttpManager<-" + (String) this->payload);
