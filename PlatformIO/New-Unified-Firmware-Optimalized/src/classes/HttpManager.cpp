@@ -8,7 +8,7 @@ HttpManager::HttpManager(char* host, char* port, char* url, char* token){
     this->token = token;
 }
 
-void HttpManager::connect()
+bool HttpManager::connect()
 {
     //retrun true false
     this->https.begin(this->client, String(this->host) + String(this->url));
@@ -22,6 +22,8 @@ void HttpManager::connect()
         Serial.println("HttpManager-ConecteTo" + String(this->host + this->url));
         Serial.println("HttpManager-Token" + String(this->token));
     #endif
+
+    return true;
 }
 
 bool HttpManager::send(char* requiresBody)
