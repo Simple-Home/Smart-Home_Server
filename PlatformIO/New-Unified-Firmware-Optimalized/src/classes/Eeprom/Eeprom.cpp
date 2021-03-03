@@ -5,7 +5,7 @@ Eeprom::Eeprom()
     EEPROM.begin(145);
 }
 
-Eeprom::write(String data, int startAddr = 1)
+void Eeprom::write(String data, int startAddr = 1)
 {
     for (int i = 0; i < (int)data.length(); ++i)
     {
@@ -17,7 +17,7 @@ Eeprom::write(String data, int startAddr = 1)
     }
 }
 
-Eeprom::read(int startAddr = 1, int endAddr = 1)
+void  Eeprom::read(int startAddr = 1, int endAddr = 1)
 {
     String localString;
     for (int i = min; i < max; ++i)
@@ -30,7 +30,7 @@ Eeprom::read(int startAddr = 1, int endAddr = 1)
     return localString;
 }
 
-Eeprom::erase(int startAddr = 1, int endAddr = 1)
+void Eeprom::erase(int startAddr = 1, int endAddr = 1)
 {
     for (int i = 1; i < (98 + plus); ++i)
     {
@@ -38,7 +38,7 @@ Eeprom::erase(int startAddr = 1, int endAddr = 1)
     }
 }
 
-Eeprom::save(int startAddr = 1, int endAddr = 1)
+bool Eeprom::save(int startAddr = 1, int endAddr = 1)
 {
     bool status = EEPROM.commit();
     #ifdef ENABLE_SERIAL_PRINT

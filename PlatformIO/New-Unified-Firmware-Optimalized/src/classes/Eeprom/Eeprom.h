@@ -1,3 +1,6 @@
+#ifndef Eeprom
+#define Eeprom
+
 #include "Arduino.h"
 #include "EEPROM.h"
 
@@ -6,6 +9,8 @@ class Eeprom{
         Eeprom();
         void write();
         void read();
-        void save();
+        bool save();
         void erase();
 };
+
+#endif
