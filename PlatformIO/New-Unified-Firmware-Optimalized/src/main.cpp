@@ -8,7 +8,7 @@ void setup() {
     if (false){
       memory.erase();
       memory.write("1",1);
-      memoty.save();
+      memory.save();
     }
 }
 
