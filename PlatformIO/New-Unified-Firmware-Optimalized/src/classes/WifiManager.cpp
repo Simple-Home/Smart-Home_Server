@@ -27,7 +27,13 @@ bool WifiManager::check(int timeout = 30) {
     return false;
 }
 
-void WifiManager::connect(char* ssid = this->ssid, char* password = this->password) {
+void WifiManager::connect(char* ssid = "", char* password = "") {
+    if (ssid == "") {
+        ssid = this->ssid;
+    }
+    if (password == "") {
+        password = this->password;
+    }
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println(_F("SSID:") + String(ssid));
         Serial.println(_F("Password:") + String(password));

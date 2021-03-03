@@ -27,7 +27,7 @@ void loop() {
 
   while (wifi_conection.check())
   {
-    token = eeprom_storage.read(65, 97);
+    String token = eeprom_storage.read(65, 97);
     HttpManager http_conection("https://dev.steelants.cz", "", "/vasek/home-milanin/api/v2/endpoint", token);
     if (http_conection.connect()){
       String response = http_conection.send();
