@@ -17,7 +17,7 @@ void EepromManager::write(String data, int startAddr = 1)
     }
 }
 
-void EepromManager::read(int startAddr = 1, int endAddr = 1)
+char* EepromManager::read(int startAddr = 1, int endAddr = 1)
 {
     if (startAddr <  endAddr) {
         return false;

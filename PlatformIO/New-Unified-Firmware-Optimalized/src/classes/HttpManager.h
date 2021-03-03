@@ -1,6 +1,3 @@
-#ifndef HttpManager_def
-#define HttpManager_def
-
 #include <Arduino.h>
 #include <ESP8266HTTPClient.h>
 
@@ -21,5 +18,3 @@ class HttpManager{
         bool disconect();
         char* getPayload();
 };
-
-#endif
