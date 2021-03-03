@@ -5,14 +5,13 @@
 #include <string.h>
 #include <ArduinoJson.h>
 
-
 class ServerLogs{
     private:
-        char payload[];
+        char payload = "";
 
     public:
         ServerLogs();
-        void add(char msg[]);
+        void add(String msg);
         bool send();
 };
 
