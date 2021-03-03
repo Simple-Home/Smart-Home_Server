@@ -2,9 +2,9 @@
 #define HttpManager_def
 
 #include <Arduino.h>
-#include <ESP8266HTTPClient.h>
-#include <WiFiClient.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClientSecure.h>
 
 
 class HttpManager{
@@ -15,7 +15,7 @@ class HttpManager{
         char* url;
         char* token;
         HTTPClient https;
-        WiFiClientSecure client;
+        BearSSL::WiFiClientSecure client;
 
     public:
         HttpManager(char* host, char* port, char* url, char* token);
