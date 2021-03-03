@@ -48,7 +48,7 @@ char* HttpManager::getPayload()
     return this->payload;
 }
 
-bool HttpManager::disconect()
+void HttpManager::disconect()
 {
     this->https.end();
 }

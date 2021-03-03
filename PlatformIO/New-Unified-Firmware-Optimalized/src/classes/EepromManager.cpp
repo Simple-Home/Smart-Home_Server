@@ -7,7 +7,7 @@ EepromManager::EepromManager()
 
 void EepromManager::write(char* data, int startAddr)
 {
-    for (int i = 0; i < (int)data.length(); ++i)
+    for (int i = 0; i < (sizeof(data) - 1); ++i)
     {
         EEPROM.write(startAddr + i, data[i]);
         #ifdef ENABLE_SERIAL_PRINT

@@ -16,9 +16,9 @@ class HttpManager{
 
     public:
         HttpManager(char* host, char* port, char* url, char* token);
-        bool connect();
+        void connect();
         bool send(char* requiresBody);
-        bool disconect();
+        void disconect();
         char* getPayload();
 };
 
