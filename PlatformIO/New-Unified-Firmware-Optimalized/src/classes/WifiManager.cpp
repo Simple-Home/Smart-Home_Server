@@ -28,10 +28,10 @@ bool WifiManager::check(int timeout) {
 }
 
 void WifiManager::connect(char* ssid, char* password) {
-    if (ssid == "") {
+    if (!ssid) {
         ssid = this->ssid;
     }
-    if (password == "") {
+    if (!password) {
         password = this->password;
     }
     #ifdef ENABLE_SERIAL_PRINT

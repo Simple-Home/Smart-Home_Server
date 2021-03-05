@@ -11,7 +11,7 @@ class WifiManager{
 
     public:
         bool check(int timeout = 30);
-        void connect(char* ssid = '', char* password = '');
+        void connect(char* ssid = (char*)"", char* password = (char*)"");
 };
 
 #endif

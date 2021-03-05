@@ -14,8 +14,8 @@ void setup() {
     while (!Serial) continue;
   #endif
   if (true) {
-    eeprom_storage.write((WIFI_SSID).c_str(), 1);
-    eeprom_storage.write((WIFI_PASS).c_str(), 33);
+    eeprom_storage.write((char*)WIFI_SSID, 1);
+    eeprom_storage.write((char*)WIFI_PASS, 33);
   }
 }
 
@@ -28,9 +28,9 @@ void loop() {
   while (wifi_conection.check())
   {
     char* token = eeprom_storage.read(65, 97);
-    HttpManager http_conection(("https://dev.steelants.cz").c_str(), ("").c_str(), ("/vasek/home-milanin/api/v2/endpoint").c_str(), token);
+    HttpManager http_conection((char*)"https://dev.steelants.cz", (char*)"", (char*)"/vasek/home-milanin/api/v2/endpoint", token);
     if (http_conection.connect()){
-      http_conection.send("test");
+      http_conection.send((char*)"test");
       String payload = http_conection.getPayload();
       http_conection.disconect();
     }
