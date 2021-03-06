@@ -2,7 +2,7 @@
 #include "HttpManager.h"
 
 
-HttpManager::HttpManager(char* host, char* port, char* url, char* token){
+HttpManager::HttpManager(char* host, char* port, char* url, String token){
     this->host = host;
     this->port = port;
     this->url = url;
@@ -16,12 +16,12 @@ bool HttpManager::connect()
     this->https.setReuse(true);
     this->https.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
     this->https.setRedirectLimit(1);
-    this->https.addHeader("Authorization","Bearer " + String(this->token));
+    this->https.addHeader("Authorization","Bearer " + this->token);
     this->https.addHeader("Content-Type", "application/json");
 
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("HttpManager-ConecteTo" + String(this->host) + String(this->url));
-        Serial.println("HttpManager-Token" + String(this->token));
+        Serial.println("HttpManager-Token" + this->token);
     #endif
 
     return true;

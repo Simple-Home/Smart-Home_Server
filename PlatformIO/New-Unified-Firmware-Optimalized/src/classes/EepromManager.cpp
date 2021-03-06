@@ -6,30 +6,37 @@ EepromManager::EepromManager()
     EEPROM.begin(145);
 }
 
-void EepromManager::write(char* data, int startAddr)
+void EepromManager::write(char* data, int startAddr, int endAddr)
 {
-    for (int i = 0; i < int((int)sizeof(data) - 1); ++i)
+    if (endAddr == 0) {
+        endAddr = (int)strlen(data);
+    }
+    for (int i = 0; i < endAddr; ++i)
     {
-        EEPROM.write(startAddr + i, data[i]);
-        #ifdef ENABLE_SERIAL_PRINT
-            Serial.println("Writing EEPROM" + data[i]);
-        #endif
+        if (i < (int)strlen(data)) {
+            EEPROM.write(startAddr + i, (char)data[i]);
+            #ifdef ENABLE_SERIAL_PRINT
+                Serial.println("Writing EEPROM: " + String(data[i]));
+            #endif
+        } else {
+            EEPROM.write(startAddr + i, 0);
+        }
         delay(10);
     }
 }
 
-char* EepromManager::read(int startAddr, int endAddr)
+String EepromManager::read(int startAddr, int endAddr)
 {
-    if (startAddr <  endAddr) {
-        return false;
+    if (startAddr >= endAddr) {
+        return "";
     }
-    char* localString;
+    String localString = "";
     for (int i = startAddr; i < endAddr; ++i)
     {
         if (EEPROM.read(i) == 0)
             break;
 
-        localString += char(EEPROM.read(i));
+        localString += String((char)EEPROM.read(i));
     }
     return localString;
 }

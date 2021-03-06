@@ -6,12 +6,12 @@
 
 class WifiManager{
     private:
-        char* ssid;
-        char* password;
+        String ssid = "";
+        String password = "";
 
     public:
         bool check(int timeout = 30);
-        void connect(char* ssid = (char*)"", char* password = (char*)"");
+        void connect(String localSsid = "", String localPassword = "");
 };
 
 #endif

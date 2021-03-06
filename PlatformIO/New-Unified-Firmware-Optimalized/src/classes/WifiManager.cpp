@@ -28,20 +28,22 @@ bool WifiManager::check(int timeout) {
     return false;
 }
 
-void WifiManager::connect(char* ssid, char* password) {
-    if (!ssid) {
-        ssid = this->ssid;
+void WifiManager::connect(String localSsid, String localPassword) {
+    if (localSsid == "") {
+        localSsid = this->ssid;
     }
-    if (!password) {
-        password = this->password;
+    if (localPassword == "") {
+        localPassword = this->password;
     }
-    #ifdef ENABLE_SERIAL_PRINT
-        Serial.println("SSID:" + String(ssid));
-        Serial.println("Password:" + String(password));
-    #endif
-    WiFi.persistent(true);
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
-    this->ssid = ssid;
-    this->password = password;
+    if (localSsid != "" && localPassword != "") {
+        #ifdef ENABLE_SERIAL_PRINT
+            Serial.println("SSID:" + localSsid);
+            Serial.println("Password:" + localPassword);
+        #endif
+        WiFi.persistent(true);
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(localSsid, localPassword);
+        this->ssid = localSsid;
+        this->password = localPassword;
+    }
 }

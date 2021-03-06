@@ -13,12 +13,12 @@ class HttpManager{
         char* host;
         char* port;
         char* url;
-        char* token;
+        String token;
         HTTPClient https;
         BearSSL::WiFiClientSecure client;
 
     public:
-        HttpManager(char* host, char* port, char* url, char* token);
+        HttpManager(char* host, char* port, char* url, String token);
         bool connect();
         bool send(char* requiresBody);
         void disconect();
