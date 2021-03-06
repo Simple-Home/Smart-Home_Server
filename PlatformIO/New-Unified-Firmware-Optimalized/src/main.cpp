@@ -19,6 +19,7 @@ void setup()
   {
     eeprom_storage.write((char *)WIFI_SSID, 1);
     eeprom_storage.write((char *)WIFI_PASS, 33);
+    eeprom_storage.save();
   }
 }
 
@@ -29,9 +30,9 @@ void loop()
   //send diag to server
   //comunication ower https
 
-  while (wifi_conection.check())
+  while (wifi_conection.check(1))
   {
-    if (!wifi_conection.check())
+    if (!wifi_conection.check(1))
       continue;
 
     char *token = eeprom_storage.read(65, 97);
