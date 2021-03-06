@@ -3,6 +3,11 @@
 
 EepromManager::EepromManager()
 {
+
+}
+
+void EepromManager::begin()
+{
     EEPROM.begin(145);
 }
 
@@ -20,7 +25,7 @@ void EepromManager::write(char* data, int startAddr)
 
 char* EepromManager::read(int startAddr, int endAddr)
 {
-    if (startAddr <  endAddr) {
+    if (startAddr > endAddr) {
         return false;
     }
     char* localString;
