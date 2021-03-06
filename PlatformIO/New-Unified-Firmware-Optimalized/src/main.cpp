@@ -34,5 +34,6 @@ void loop() {
       String payload = http_conection.getPayload();
       http_conection.disconect();
     }
+    delay(100);
   }
 }

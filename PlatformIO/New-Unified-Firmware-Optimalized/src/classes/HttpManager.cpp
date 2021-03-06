@@ -1,3 +1,4 @@
+#include "config.h"
 #include "HttpManager.h"
 
 
@@ -19,7 +20,7 @@ bool HttpManager::connect()
     this->https.addHeader("Content-Type", "application/json");
 
     #ifdef ENABLE_SERIAL_PRINT
-        Serial.println("HttpManager-ConecteTo" + String(this->host + this->url));
+        Serial.println("HttpManager-ConecteTo" + String(this->host) + String(this->url));
         Serial.println("HttpManager-Token" + String(this->token));
     #endif
 
@@ -29,7 +30,7 @@ bool HttpManager::connect()
 bool HttpManager::send(char* requiresBody)
 {   
     #ifdef ENABLE_SERIAL_PRINT
-        Serial.println("HttpManager->" + requiresBody);
+        Serial.println("HttpManager->" + String(requiresBody));
     #endif
     int httpCode = this->https.POST(requiresBody);
     if (httpCode != 200){
@@ -38,7 +39,7 @@ bool HttpManager::send(char* requiresBody)
 
     this->payload = this->https.getString();
     #ifdef ENABLE_SERIAL_PRINT
-        Serial.print("HttpManager<-" + String(httpsCode));
+        Serial.print("HttpManager<-" + String(httpCode));
         Serial.print("HttpManager<-" + String(this->payload));
     #endif
  

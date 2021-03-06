@@ -1,3 +1,4 @@
+#include "config.h"
 #include "ServerLogs.h"
 
 ServerLogs::ServerLogs(){
