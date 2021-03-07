@@ -11,6 +11,8 @@ HttpManager::HttpManager(char* host, char* port, char* url, String token){
 
 bool HttpManager::connect()
 {
+
+    //TODO: Implement Https 
     this->client.setInsecure();   
     //retrun true false
     this->https.begin(this->client, String(this->host) + String(this->url));

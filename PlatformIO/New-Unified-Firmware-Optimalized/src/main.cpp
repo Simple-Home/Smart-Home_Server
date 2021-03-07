@@ -21,6 +21,7 @@ void setup()
     eeprom_storage.erase();
     eeprom_storage.write((char *)WIFI_SSID, 1, 33);
     eeprom_storage.write((char *)WIFI_PASS, 33, 65);
+    eeprom_storage.write((char *)"asrassrar158", 65, 97);
     eeprom_storage.save();
   }
 }
@@ -34,12 +35,12 @@ void loop()
 
   while (wifi_conection.check(30))
   {
-    String token = eeprom_storage.read(65, 97);
-    HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint", (char *)"asrassrar158");
+    HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint", eeprom_storage.read(65, 97));
     if (http_conection.connect())
     {
       http_conection.send((char *)"{\"value\":\"tests\"}");
       String payload = http_conection.getPayload();
+
       http_conection.disconect();
     }
     delay(600);
