@@ -11,6 +11,7 @@ HttpManager::HttpManager(char* host, char* port, char* url, String token){
 
 bool HttpManager::connect()
 {
+    this->client.setInsecure();   
     //retrun true false
     this->https.begin(this->client, String(this->host) + String(this->url));
     this->https.setReuse(true);
@@ -29,18 +30,19 @@ bool HttpManager::connect()
 
 bool HttpManager::send(char* requiresBody)
 {   
+    int httpCode = this->https.POST(requiresBody);
     #ifdef ENABLE_SERIAL_PRINT
         Serial.println("HttpManager->" + String(requiresBody));
+        Serial.println("HttpManager<-" + String(httpCode));
     #endif
-    int httpCode = this->https.POST(requiresBody);
+
     if (httpCode != 200){
         return false;
     }
 
     this->payload = this->https.getString();
     #ifdef ENABLE_SERIAL_PRINT
-        Serial.print("HttpManager<-" + String(httpCode));
-        Serial.print("HttpManager<-" + String(this->payload));
+        Serial.println("HttpManager<-" + String(this->payload));
     #endif
  
     return true;
