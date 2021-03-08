@@ -42,8 +42,8 @@ void commandHandler(String device_command){
 
 void configurationReq(){
   //Maybe to separet Function or class
-  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint/cofiguration", eeprom_storage.read(65, 97));
-  if (http_conection.connect())
+  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", eeprom_storage.read(65, 97));
+  if (http_conection.connect("/endpoint/cofiguration"))
   {
     http_conection.send((char *)"");
     String payload = http_conection.getPayload();
@@ -58,8 +58,8 @@ void configurationReq(){
 
 void runtimeReq(){
   //Maybe to separet Function or class
-  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint", eeprom_storage.read(65, 97));
-  if (http_conection.connect())
+  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", eeprom_storage.read(65, 97));
+  if (http_conection.connect("/endpoint"))
   {
     http_conection.send((char *)"{\"value\":\"tests\"}");
     String payload = http_conection.getPayload();

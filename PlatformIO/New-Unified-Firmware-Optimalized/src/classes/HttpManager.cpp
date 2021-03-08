@@ -2,21 +2,21 @@
 #include "HttpManager.h"
 
 
-HttpManager::HttpManager(char* host, char* port, char* url, String token){
+HttpManager::HttpManager(char* host, char* port, char* rootUrl, String token){
     this->host = host;
     this->port = port;
-    this->url = url;
+    this->rootUrl = rootUrl;
     this->token = token;
 }
 
-bool HttpManager::connect()
+bool HttpManager::connect(char* endpoint)
 {
 
     //TODO: Implement Https 
     //HINT: https://medium.com/@dfa_31434/doing-ssl-requests-on-esp8266-correctly-c1f60ad46f5e
     this->client.setInsecure();   
     //retrun true false
-    this->https.begin(this->client, String(this->host) + String(this->url));
+    this->https.begin(this->client, String(this->host) + String(this->rootUrl) + String(endpoint));
     this->https.setReuse(true);
     this->https.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
     this->https.setRedirectLimit(1);

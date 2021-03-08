@@ -12,14 +12,14 @@ class HttpManager{
         String payload;
         char* host;
         char* port;
-        char* url;
+        char* rootUrl;
         String token;
         HTTPClient https;
         BearSSL::WiFiClientSecure client;
 
     public:
-        HttpManager(char* host, char* port, char* url, String token);
-        bool connect();
+        HttpManager(char* host, char* port, char* rootUrl, String token);
+        bool connect(char* endpoint);
         bool send(char* requiresBody);
         void disconect();
         String getPayload();
