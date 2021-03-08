@@ -55,6 +55,7 @@ void configurationReq(){
   }
   delay(600);
 }
+
 void runtimeReq(){
   //Maybe to separet Function or class
   HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint", eeprom_storage.read(65, 97));
