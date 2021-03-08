@@ -24,7 +24,7 @@ bool HttpManager::connect(char* endpoint)
     this->https.addHeader("Content-Type", "application/json");
 
     #ifdef ENABLE_SERIAL_PRINT
-        Serial.println("HttpManager-ConecteTo" + String(this->host) + String(this->url));
+        Serial.println("HttpManager-ConecteTo" + String(this->host) + String(this->rootUrl));
         Serial.println("HttpManager-Token" + this->token);
     #endif
 
