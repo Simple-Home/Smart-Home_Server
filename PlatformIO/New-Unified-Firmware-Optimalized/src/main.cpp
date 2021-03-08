@@ -9,7 +9,7 @@
 EepromManager eeprom_storage;
 WifiManager wifi_conection;
 
-void handleCommand(String device_command){
+void commandHandler(String device_command){
   if (device_command == "reset"){
     #ifdef ENABLE_SERIAL_PRINT
       Serial.println("Command-Restarting");
@@ -40,6 +40,42 @@ void handleCommand(String device_command){
   }
 }
 
+void configurationReq(){
+  //Maybe to separet Function or class
+  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint/cofiguration", eeprom_storage.read(65, 97));
+  if (http_conection.connect())
+  {
+    http_conection.send((char *)"");
+    String payload = http_conection.getPayload();
+    
+    //json Deserialize test
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, payload);
+    http_conection.disconect();
+  }
+  delay(600);
+}
+void runtimeReq(){
+  //Maybe to separet Function or class
+  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint", eeprom_storage.read(65, 97));
+  if (http_conection.connect())
+  {
+    http_conection.send((char *)"{\"value\":\"tests\"}");
+    String payload = http_conection.getPayload();
+    
+    //json Deserialize test
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, payload);
+
+    if (doc["command"]) {
+      commandHandler(doc["command"]);
+    }
+
+    http_conection.disconect();
+  }
+  delay(600);
+}
+
 void setup()
 {
   #ifdef ENABLE_SERIAL_PRINT
@@ -51,20 +87,7 @@ void setup()
 
   wifi_conection.connect(eeprom_storage.read(1, 33), eeprom_storage.read(33, 65));
   if (wifi_conection.check(30)){
-
-    //Maybe to separet Function or class
-    HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint/cofiguration", eeprom_storage.read(65, 97));
-    if (http_conection.connect())
-    {
-      http_conection.send((char *)"");
-      String payload = http_conection.getPayload();
-      
-      //json Deserialize test
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, payload);
-      http_conection.disconect();
-    }
-    delay(600);
+    configurationReq();
   }
 }
 
@@ -76,24 +99,7 @@ void loop()
 
   while (wifi_conection.check(30))
   {
-    //Maybe to separet Function or class
-    HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2/endpoint", eeprom_storage.read(65, 97));
-    if (http_conection.connect())
-    {
-      http_conection.send((char *)"{\"value\":\"tests\"}");
-      String payload = http_conection.getPayload();
-      
-      //json Deserialize test
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, payload);
-
-      if (doc["command"]) {
-        handleCommand(doc["command"]);
-      }
-
-      http_conection.disconect();
-    }
-    delay(600);
+    runtimeReq();
   }
 }
 
