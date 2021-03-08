@@ -8,6 +8,7 @@
 EepromManager eeprom_storage;
 WifiManager wifi_conection;
 
+    #ifdef ENABLE_SERIAL_PRINT
 void setup()
 {
 #ifdef ENABLE_SERIAL_PRINT
@@ -41,6 +42,7 @@ void loop()
       http_conection.send((char *)"{\"value\":\"tests\"}");
       String payload = http_conection.getPayload();
 
+      if (doc["command"]) {
       http_conection.disconect();
     }
     delay(600);
