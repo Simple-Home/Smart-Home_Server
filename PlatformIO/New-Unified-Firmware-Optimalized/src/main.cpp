@@ -7,8 +7,8 @@
 #include "classes/HttpManager.h"
 #include "classes/OutputManager.h"
 
-#include <functions/commands.cpp>
-#include <functions/requests.cpp>
+#include <functions/commands.h>
+#include <functions/requests.h>
 
 EepromManager eeprom_storage;
 WifiManager wifi_conection;
