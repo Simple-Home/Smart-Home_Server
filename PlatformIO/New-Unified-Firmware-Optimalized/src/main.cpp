@@ -5,9 +5,11 @@
 #include "classes/EepromManager.h"
 #include "classes/WifiManager.h"
 #include "classes/HttpManager.h"
+#include "classes/OutputManager.h"
 
 EepromManager eeprom_storage;
 WifiManager wifi_conection;
+OutputManager led(LED_BUILTIN);
 
 void commandHandler(String device_command){
   if (device_command == "reset"){
@@ -72,6 +74,10 @@ void runtimeReq(){
       commandHandler(doc["command"]);
     }
 
+    if (doc["values"]) {
+      led.on();
+    }
+
     http_conection.disconect();
   }
   delay(600);
@@ -85,6 +91,7 @@ void setup()
       continue;
   #endif
   delay(1000);
+  led.off();
 
   wifi_conection.connect(eeprom_storage.read(1, 33), eeprom_storage.read(33, 65));
   if (wifi_conection.check(30)){
