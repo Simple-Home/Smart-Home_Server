@@ -2,6 +2,8 @@
 #define InputManager_def
 
 #include <Arduino.h>
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
 
 class InputManager{
     private:

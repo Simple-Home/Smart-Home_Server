@@ -7,12 +7,12 @@
 #include "classes/HttpManager.h"
 #include "classes/OutputManager.h"
 
+#include "functions/commands.cpp"
+#include "functions/requests.cpp"
+
 EepromManager eeprom_storage;
 WifiManager wifi_conection;
 OutputManager led(LED_BUILTIN);
-
-#include "functions/requests.cpp"
-#include "functions/commands.cpp"
 
 void setup()
 {
@@ -26,7 +26,7 @@ void setup()
 
   wifi_conection.connect(eeprom_storage.read(1, 33), eeprom_storage.read(33, 65));
   if (wifi_conection.check(30)){
-    configurationReq();
+    configurationReq(eeprom_storage.read(65, 97));
   }
 }
 
@@ -38,7 +38,13 @@ void loop()
 
   while (wifi_conection.check(30))
   {
-    runtimeReq();
+    DynamicJsonDocument doc = runtimeReq(eeprom_storage.read(65, 97));
+    if (doc["command"]) {
+      commandHandler(doc["command"], eeprom_storage);
+    }
+    if (doc["values"]) {
+      led.on();
+    }
   }
 }
 

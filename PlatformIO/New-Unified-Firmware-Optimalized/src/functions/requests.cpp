@@ -1,7 +1,10 @@
-void configurationReq(){
+#include <ArduinoJson.h>
+#include "classes/HttpManager.h"
+
+void configurationReq(String token){
   //Maybe to separet Function or class
-  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", eeprom_storage.read(65, 97));
-  if (http_conection.connect("/endpoint/cofiguration"))
+  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", token);
+  if (http_conection.connect((char *)"/endpoint/cofiguration"))
   {
     http_conection.send((char *)"");
     String payload = http_conection.getPayload();
@@ -14,10 +17,10 @@ void configurationReq(){
   delay(600);
 }
 
-void runtimeReq(){
+DynamicJsonDocument runtimeReq(String token){
   //Maybe to separet Function or class
-  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", eeprom_storage.read(65, 97));
-  if (http_conection.connect("/endpoint"))
+  HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", token);
+  if (http_conection.connect((char *)"/endpoint"))
   {
     http_conection.send((char *)"{\"value\":\"tests\"}");
     String payload = http_conection.getPayload();
@@ -25,16 +28,8 @@ void runtimeReq(){
     //json Deserialize test
     DynamicJsonDocument doc(1024);
     deserializeJson(doc, payload);
-
-    if (doc["command"]) {
-      commandHandler(doc["command"]);
-    }
-
-    if (doc["values"]) {
-      led.on();
-    }
-
     http_conection.disconect();
+    return doc;
   }
   delay(600);
 }

@@ -1,4 +1,7 @@
-void commandHandler(String device_command){
+#include <ArduinoJson.h>
+#include "classes/EepromManager.h"
+
+void commandHandler(String device_command, EepromManager eeprom){
   if (device_command == "reset"){
     #ifdef ENABLE_SERIAL_PRINT
       Serial.println("Command-Restarting");
@@ -20,8 +23,8 @@ void commandHandler(String device_command){
     #ifdef ENABLE_SERIAL_PRINT
       Serial.println("Command-FactryReset");
     #endif
-    eeprom_storage.erase();
-    eeprom_storage.save();
+    eeprom.erase();
+    eeprom.save();
   } else {
     #ifdef ENABLE_SERIAL_PRINT
       Serial.println("Command-Unknown");
