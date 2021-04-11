@@ -1,7 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"name": "New-Unified-Firmware-Optimalized",
+			"path": "PlatformIO\\New-Unified-Firmware-Optimalized"
 		}
 	],
 	"settings": {

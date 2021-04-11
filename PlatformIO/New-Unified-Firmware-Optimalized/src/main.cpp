@@ -7,6 +7,7 @@
 #include "classes/HttpManager.h"
 #include "classes/OutputManager.h"
 #include "classes/DHTManager.h"
+#include "classes/WebPageManager.h"
 
 #include <functions/commands.h>
 #include <functions/requests.h>
@@ -15,6 +16,7 @@ EepromManager eeprom_storage;
 WifiManager wifi_conection;
 OutputManager led(LED_BUILTIN);
 DHTManager dht(DHT_PIN);
+WebPageManager web_page("FILIP_ENVIRONMENT_0", "uQvN4pJnVb", eeprom_storage);
 
 
 void setup()
@@ -29,7 +31,10 @@ void setup()
 
   wifi_conection.connect(eeprom_storage.read(1, 33), eeprom_storage.read(33, 65));
   if (wifi_conection.check(30)){
+    web_page.Active();
     configurationReq(eeprom_storage.read(65, 97));
+  } else {
+    web_page.StartPage();
   }
 }
 
@@ -41,6 +46,7 @@ void loop()
 
   while (wifi_conection.check(30))
   {
+    web_page.Active();
     DynamicJsonDocument doc = runtimeReq(eeprom_storage.read(65, 97));
     if (doc["command"]) {
       commandHandler(doc["command"], eeprom_storage);
@@ -49,5 +55,7 @@ void loop()
       led.on();
     }
   }
+
+  web_page.StartPage();
 }
 
