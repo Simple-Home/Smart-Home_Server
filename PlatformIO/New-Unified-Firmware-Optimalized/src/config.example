@@ -1,0 +1,7 @@
+//Rename To Config.H
+#define ENABLE_SERIAL_PRINT
+#define WIFI_SSID ""
+#define WIFI_PASS ""
+// #define DHT_PIN 
+
+
