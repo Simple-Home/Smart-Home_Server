@@ -29,7 +29,7 @@ DynamicJsonDocument runtimeReq(String token){
       DHTManager dht(DHT_PIN);
       root["temp"] = dht.get(0);
       root["humi"] = dht.get(1);
-    #elif
+    #endif
     
     String body;
     doc.printTo(body);
