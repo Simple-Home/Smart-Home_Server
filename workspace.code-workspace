@@ -7,7 +7,14 @@
 	"settings": {
 		"files.associations": {
 			"string": "cpp",
-			"random": "cpp"
+			"random": "cpp",
+			"initializer_list": "cpp",
+			"list": "cpp",
+			"vector": "cpp",
+			"xhash": "cpp",
+			"xstring": "cpp",
+			"xutility": "cpp",
+			"cstddef": "cpp"
 		}
 	}
 }

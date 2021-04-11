@@ -22,6 +22,7 @@ DynamicJsonDocument runtimeReq(String token){
   HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", token);
   if (http_conection.connect((char *)"/endpoint"))
   {
+    String body = "[{\"temp\":"dht.get(0)"},{\"humi\":"dht.get(1)"}]"
     http_conection.send((char *)"{\"value\":\"tests\"}");
     String payload = http_conection.getPayload();
     

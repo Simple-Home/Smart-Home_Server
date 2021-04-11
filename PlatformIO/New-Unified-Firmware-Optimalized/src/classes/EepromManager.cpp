@@ -8,20 +8,26 @@ EepromManager::EepromManager()
 
 void EepromManager::write(char* data, int startAddr, int endAddr)
 {
-    if (endAddr == 0) {
-        endAddr = (int)strlen(data);
-    }
-    for (int i = 0; i < endAddr; ++i)
-    {
-        if (i < (int)strlen(data)) {
-            EEPROM.write(startAddr + i, (char)data[i]);
-            #ifdef ENABLE_SERIAL_PRINT
-                Serial.println("Writing EEPROM: " + String(data[i]));
-            #endif
-        } else {
-            EEPROM.write(startAddr + i, 0);
+    //mám to dobře ?
+    //jako abych ověřil před zápisem že tam to stejné už není 
+
+    if (this->read(startAddr, endAddr) != data){
+        if (endAddr == 0) {
+            endAddr = (int)strlen(data);
         }
-        delay(10);
+        
+        for (int i = 0; i < endAddr; ++i)
+        {
+            if (i < (int)strlen(data)) {
+                EEPROM.write(startAddr + i, (char)data[i]);
+                #ifdef ENABLE_SERIAL_PRINT
+                    Serial.println("Writing EEPROM: " + String(data[i]));
+                #endif
+            } else {
+                EEPROM.write(startAddr + i, 0);
+            }
+            delay(10);
+        }
     }
 }
 

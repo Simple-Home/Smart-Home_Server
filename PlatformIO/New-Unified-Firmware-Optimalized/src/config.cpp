@@ -1,0 +1,1 @@
+#define DHT_PIN  = 2

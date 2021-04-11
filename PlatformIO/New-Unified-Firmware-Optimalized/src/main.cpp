@@ -6,6 +6,7 @@
 #include "classes/WifiManager.h"
 #include "classes/HttpManager.h"
 #include "classes/OutputManager.h"
+#include "classes/DHTManager.h"
 
 #include <functions/commands.h>
 #include <functions/requests.h>
@@ -13,6 +14,8 @@
 EepromManager eeprom_storage;
 WifiManager wifi_conection;
 OutputManager led(LED_BUILTIN);
+DHTManager dht(DHT_PIN);
+
 
 void setup()
 {
