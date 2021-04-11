@@ -77,9 +77,9 @@ void WebPageManager::ConfigPage()
     #endif
 
     //Routing
-    server.on("/", this->ResponseHandler);
-    server.onNotFound(this->ResponseHandler);
-    server.begin();
+    this->server.on("/", this->ResponseHandler());
+    this->server.onNotFound(this->ResponseHandler());
+    this->server.begin();
     
     //Captive Portal
     dnsServer.start(this->DNS_PORT, "*", WiFi.softAPIP());
