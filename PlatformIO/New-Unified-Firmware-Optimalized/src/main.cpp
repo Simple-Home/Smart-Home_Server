@@ -14,7 +14,6 @@
 EepromManager eeprom_storage;
 WifiManager wifi_conection;
 OutputManager led(LED_BUILTIN);
-DHTManager dht(DHT_PIN);
 
 
 void setup()

@@ -22,12 +22,21 @@ DynamicJsonDocument runtimeReq(String token){
   HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", token);
   if (http_conection.connect((char *)"/endpoint"))
   {
-    String body = "[{\"temp\":"dht.get(0)"},{\"humi\":"dht.get(1)"}]"
-    http_conection.send((char *)"{\"value\":\"tests\"}");
-    String payload = http_conection.getPayload();
-    
-    //json Deserialize test
     DynamicJsonDocument doc(1024);
+    JsonObject root = doc.to<JsonObject>();
+
+    #ifdef DHT_PIN
+      DHTManager dht(DHT_PIN);
+      root["temp"] = dht.get(0);
+      root["humi"] = dht.get(1);
+    #elif
+    
+    String body;
+    doc.printTo(body);
+    http_conection.send(body);
+    
+    String payload = http_conection.getPayload();
+    //json Deserialize test
     deserializeJson(doc, payload);
     http_conection.disconect();
     return doc;
