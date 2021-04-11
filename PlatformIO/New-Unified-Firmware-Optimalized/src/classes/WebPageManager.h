@@ -3,15 +3,14 @@
 
 #include <Arduino.h>
 #include "classes/EepromManager.h"
-#include <ESP8266WebServer.h>
-#include <WiFiClient.h>
-#include <DNSServer.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <DNSServer.h>
 
 class WebPageManager
 {
 private:
-    bool configPage = false;
+    bool configPage = true;
     ESP8266WebServer server{80};
     const byte DNS_PORT = 53;
     DNSServer dnsServer;

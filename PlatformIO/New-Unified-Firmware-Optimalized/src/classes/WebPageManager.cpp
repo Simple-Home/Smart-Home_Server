@@ -50,12 +50,18 @@ WebPageManager::WebPageManager(String configApName, String configApPassword, Eep
 
 void WebPageManager::StartPage()
 {
-    if (configPage) {
-        configPage = false;
-        this->ConfigPage();
-    }
-    this->dnsServer.processNextRequest();
-    this->server.handleClient();
+  #ifdef ENABLE_SERIAL_PRINT
+      Serial.println("WebPage-Running");
+  #endif
+  if (configPage) {
+    #ifdef ENABLE_SERIAL_PRINT
+      Serial.println("WebPage-Create");
+    #endif
+    configPage = false;
+    this->ConfigPage();
+  }
+  this->dnsServer.processNextRequest();
+  this->server.handleClient();
 }
 
 void WebPageManager::ConfigPage()
@@ -77,8 +83,8 @@ void WebPageManager::ConfigPage()
     #endif
 
     //Routing
-    this->server.on("/", this->ResponseHandler());
-    this->server.onNotFound(this->ResponseHandler());
+    this->server.on("/", std::bind(&WebPageManager::ResponseHandler, this));
+    this->server.onNotFound(std::bind(&WebPageManager::ResponseHandler, this));
     this->server.begin();
     
     //Captive Portal
@@ -90,6 +96,9 @@ void WebPageManager::ResponseHandler()
     String ssid = "";
     String pasw = "";
     String apiToken = "";
+    char ssidCh[33];
+    char paswCh[33];
+    char apiTokenCh[33];
     #ifdef ENABLE_SERIAL_PRINT
       Serial.println("WebPage-RoutingWifiSetting");
     #endif
@@ -105,10 +114,13 @@ void WebPageManager::ResponseHandler()
                 Serial.println(pasw);
                 Serial.println(apiToken);
             #endif
+            ssid.toCharArray(ssidCh, 33);
+            pasw.toCharArray(paswCh, 33);
+            apiToken.toCharArray(apiTokenCh, 33);
             this->eeprom_storage.erase(1, 97);
-            this->eeprom_storage.write((char*)ssid, 1, 33);
-            this->eeprom_storage.write((char*)pasw, 33, 65);
-            this->eeprom_storage.write((char*)apiToken, 65, 97);
+            this->eeprom_storage.write(ssidCh, 1, 33);
+            this->eeprom_storage.write(paswCh, 33, 65);
+            this->eeprom_storage.write(apiTokenCh, 65, 97);
             this->eeprom_storage.save();
             this->server.send(200, "application/json", "Restarting...");
             delay(500);
@@ -118,8 +130,11 @@ void WebPageManager::ResponseHandler()
             ESP.restart();
         }
     }
-
-    this->server.send(200, "text/html", this->pageHtml.replace("%wifiScan%", wifiScan()));
+    String content = this->pageHtml;
+    content.replace(String("%wifiScan%"), String(this->wifiScan()));
+    char contentCh[content.length() + 1];
+    content.toCharArray(contentCh, content.length() + 1);
+    this->server.send(200, "text/html", contentCh);
 }
 
 String WebPageManager::wifiScan()
