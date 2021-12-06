@@ -3,14 +3,23 @@
 
 void configurationReq(String token){
     //Maybe to separet Function or class
-    HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", token);
-    if (http_conection.connect((char *)"/endpoint/cofiguration"))
+    HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/simple-home-v4/public/api/v1", token);
+    if (http_conection.connect((char *)"/setup"))
     {
-        http_conection.send((char *)"");
+        DynamicJsonDocument doc(1024);
+        JsonObject root = doc.to<JsonObject>();
+
+        #ifdef DHT_PIN
+            root["properties"][0] = "temp";
+            root["properties"][1] = "humi";
+        #endif
+        
+        char body[256];
+        serializeJson(doc, body);
+        http_conection.send(body);
         String payload = http_conection.getPayload();
         
         //json Deserialize test
-        DynamicJsonDocument doc(1024);
         deserializeJson(doc, payload);
         http_conection.disconect();
     }
@@ -19,8 +28,8 @@ void configurationReq(String token){
 
 DynamicJsonDocument runtimeReq(String token){
     //Maybe to separet Function or class
-    HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/home-update/api/v2", token);
-    if (http_conection.connect((char *)"/endpoint"))
+    HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/simple-home-v4/public/api/v1", token);
+    if (http_conection.connect((char *)"/data"))
     {
         DynamicJsonDocument doc(1024);
         JsonObject root = doc.to<JsonObject>();

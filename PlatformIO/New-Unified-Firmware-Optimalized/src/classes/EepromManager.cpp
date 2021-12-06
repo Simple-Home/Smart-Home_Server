@@ -51,7 +51,7 @@ void EepromManager::erase(int startAddr, int endAddr)
 {
     for (int i = startAddr; i < (98 + endAddr); ++i)
     {
-        EEPROM.write(i, 0);
+        EEPROM.write(i, ' ');
     }
 }
 

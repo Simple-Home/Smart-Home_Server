@@ -40,7 +40,7 @@ void WifiManager::connect(String localSsid, String localPassword) {
             Serial.println("SSID:" + localSsid);
             Serial.println("Password:" + localPassword);
         #endif
-        WiFi.persistent(true);
+        WiFi.persistent(false);
         WiFi.mode(WIFI_STA);
         WiFi.begin(localSsid, localPassword);
         this->ssid = localSsid;

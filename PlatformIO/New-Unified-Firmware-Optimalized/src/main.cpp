@@ -9,8 +9,8 @@
 #include "classes/DHTManager.h"
 #include "classes/WebPageManager.h"
 
-#include <functions/commands.h>
-#include <functions/requests.h>
+#include "functions/commands.h"
+#include "functions/requests.h"
 
 EepromManager eeprom_storage;
 WifiManager wifi_conection;
@@ -29,7 +29,6 @@ void setup()
   #endif
   delay(1000);
   led.off();
-
   wifi_conection.connect(eeprom_storage.read(1, 33), eeprom_storage.read(33, 65));
   if (wifi_conection.check(30)){
     web_page.Active();
