@@ -32,7 +32,7 @@ void setup()
   wifi_conection.connect(eeprom_storage.read(1, 33), eeprom_storage.read(33, 65));
   if (wifi_conection.check(30)){
     web_page.Active();
-    configurationReq(eeprom_storage.read(65, 97));
+    configurationReq(eeprom_storage.read(65, 97), wifi_conection);
   } else {
     cannotConnect = true;
     web_page.StartPage();

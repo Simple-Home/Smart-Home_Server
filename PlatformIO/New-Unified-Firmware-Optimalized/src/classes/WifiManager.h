@@ -12,6 +12,7 @@ class WifiManager{
     public:
         bool check(int timeout = 30);
         void connect(String localSsid = "", String localPassword = "");
+        void setHostname(String hostname = "");
 };
 
 #endif

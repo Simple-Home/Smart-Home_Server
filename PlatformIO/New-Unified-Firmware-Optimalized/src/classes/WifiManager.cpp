@@ -47,3 +47,12 @@ void WifiManager::connect(String localSsid, String localPassword) {
         this->password = localPassword;
     }
 }
+
+void WifiManager::setHostname(String hostname) {
+    if (hostname != "") {
+        #ifdef ENABLE_SERIAL_PRINT
+            Serial.println("Wifi-setHostname:" + hostname);
+        #endif
+        WiFi.hostname(hostname);
+    }
+}

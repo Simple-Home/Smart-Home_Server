@@ -1,7 +1,7 @@
 #include <ArduinoJson.h>
 #include "classes/HttpManager.h"
 
-void configurationReq(String token){
+void configurationReq(String token, WifiManager wifi_manager){
     //Maybe to separet Function or class
     HttpManager http_conection((char *)"https://dev.steelants.cz", (char *)"443", (char *)"/vasek/simple-home-v4/public/api/v1", token);
     if (http_conection.connect((char *)"/setup"))
@@ -21,6 +21,7 @@ void configurationReq(String token){
         
         //json Deserialize test
         deserializeJson(doc, payload);
+        wifi_manager.setHostname(doc["hostname"]);
         http_conection.disconect();
     }
     delay(600);
