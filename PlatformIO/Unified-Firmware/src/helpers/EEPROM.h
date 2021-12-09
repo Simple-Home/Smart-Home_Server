@@ -8,7 +8,7 @@ void WriteEeprom(String data, int start = 1, bool force = false)
     #endif
     delay(100);
   }
-  if (true){
+  if (force == true){
     EEPROM.commit();
   }
 }
@@ -17,9 +17,9 @@ void CleanEeprom(int plus = 0, bool force = false)
 {
   for (int i = 1; i < (98 + plus); ++i)
   {
-    EEPROM.write(i, 0);
+    EEPROM.write(i, ' ');
   }
-  if (true){
+  if (force == true){
     EEPROM.commit();
   }
 }
@@ -27,13 +27,17 @@ void CleanEeprom(int plus = 0, bool force = false)
 String ReadEeprom(int min, int max)
 {
   String localString;
+  char loadString;
   for (int i = min; i < max; ++i)
   {
-    if (EEPROM.read(i) == 0)
+    loadString = char(EEPROM.read(i));
+    if (loadString == ' ')
       break;
-    if (EEPROM.read(i) == '�')
+    if (loadString == 0)
       break;
-    localString += char(EEPROM.read(i));
+    if (loadString == '�')
+      break;
+    localString += loadString;
   }
   return localString;
 }
