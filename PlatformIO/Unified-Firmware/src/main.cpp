@@ -270,7 +270,7 @@ void loop()
   if (!sendData(jsonContent, apiToken))
   {
     #ifdef ENABLE_SERIAL_PRINT
-        Serial.println("REQ Failed");
+        Serial.println("REQ Failed - interval");
     #endif
     #ifdef WATCHDOG_TRASHOLD
       watchdog.log();

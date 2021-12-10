@@ -1,5 +1,7 @@
 HTTPClient https;
 String response;
+unsigned long int lastPost = 0;
+int postInterval = 1000;
 
 String sendHttpRequest(String requestJson, String token)
 {
@@ -34,24 +36,30 @@ String sendHttpRequest(String requestJson, String token)
 
 bool sendData(DynamicJsonDocument requestJson, String token)
 {
-  requestJson["token"] = token;
-  String jsonString = "";
-  serializeJson(requestJson, jsonString);
-#ifdef ENABLE_SERIAL_PRINT
-  Serial.println("-> " + jsonString);
-#endif
-  String response = sendHttpRequest(jsonString, token);
+  if ((millis() - lastPost) >= postInterval) {
+    requestJson["token"] = token;
+    String jsonString = "";
+    serializeJson(requestJson, jsonString);
+    #ifdef ENABLE_SERIAL_PRINT
+      Serial.println("-> " + jsonString);
+    #endif
+    String response = sendHttpRequest(jsonString, token);
 
-  if (response.length() > 1)
-  {
-    jsonError = deserializeJson(jsonObject, response);
-    if (jsonError.code() == DeserializationError::Ok)
+    if (response.length() > 1)
     {
-      return true;
+      jsonError = deserializeJson(jsonObject, response);
+      if (jsonError.code() == DeserializationError::Ok)
+      {
+        lastPost = millis();
+        return true;
+      }
+      #ifdef ENABLE_SERIAL_PRINT
+          Serial.println("Json Deserialize Error: " + String(jsonError.c_str()));
+      #endif
     }
-#ifdef ENABLE_SERIAL_PRINT
-    Serial.println("Json Deserialize Error: " + String(jsonError.c_str()));
-#endif
+    lastPost = millis();
+    return false;
+  } else {
+    return true;
   }
-  return false;
 }
