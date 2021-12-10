@@ -31,7 +31,7 @@ bool waitForWifi(int timeout = 30)
 }
 bool wifiConnect(String localSsid, String localPasw, bool waitUntilConnect = false)
 {
-  WiFi.persistent(true);
+  WiFi.persistent(false);
   #ifdef ENABLE_SERIAL_PRINT
     Serial.print("SSID:");
     Serial.print(localSsid);

@@ -43,14 +43,14 @@ WiFiClientSecure client;
 #endif
 //Variables
 const char apiCA[] PROGMEM = ""; //Fingerprint of Server Certificate
-String apiHost = "https://dev.steelants.cz";
-String apiUrl = "/vasek/home-update/api/endpoint";
+String apiHost = API_HOST;
+String apiUrl = API_URL;
 
 #ifdef ENABLE_OTA
   //Simpe-Home OTA
   const char otaCA[] PROGMEM = ""; //Fingerprint of Server Certificate
-  String otaHost = "https://dev.steelants.cz";
-  String otaUrl = "/vasek/home-update/api/update";
+  String otaHost = OTA_HOST;
+  String otaUrl = OTA_URL;
 #endif
 
 #ifdef WIFI_CONFIG_PAGE
