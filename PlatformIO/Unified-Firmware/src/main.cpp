@@ -7,6 +7,8 @@ String ssid = "";
 String pasw = "";
 String apiToken = "";
 bool wifiOnce = true;
+unsigned long int lastPost = 0;
+int postInterval = 1000;
 #ifdef  ENABLE_SERVER_LOGS
   String logs = "";
 #endif
@@ -266,16 +268,19 @@ void loop()
     jsonContent["values"]["battery"]["value"] = readBattery();
     jsonContent["values"]["battery"]["unit"] = "v";
   #endif
-
-  if (!sendData(jsonContent, apiToken))
-  {
-    #ifdef ENABLE_SERIAL_PRINT
-        Serial.println("REQ Failed - interval");
-    #endif
-    #ifdef WATCHDOG_TRASHOLD
-      watchdog.log();
-    #endif
-    return;
+  if ((millis() - lastPost) >= postInterval || buttonPushed) {
+    if (!sendData(jsonContent, apiToken))
+    {
+      #ifdef ENABLE_SERIAL_PRINT
+          Serial.println("REQ Failed - interval");
+      #endif
+      #ifdef WATCHDOG_TRASHOLD
+        watchdog.log();
+      #endif
+      lastPost = millis();
+      return;
+    }
+    lastPost = millis();
   }
 
   if (!jsonObject.containsKey("state") && !jsonObject.containsKey("values") && jsonObject["state"] != "succes")
