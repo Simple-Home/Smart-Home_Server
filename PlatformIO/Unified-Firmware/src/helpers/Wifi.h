@@ -97,8 +97,8 @@ String wifiScan()
       Serial.print(" (");
       Serial.print(WiFi.RSSI(i));
       Serial.print(")");
-      Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*");
-      wifiHtmlList += "<a href=\"#\" onclick=\"fillSSID(this.innerHTML)\">" + WiFi.SSID(i) + "</a><br>";
+      Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? "" : "*");
+      wifiHtmlList += "<a href=\"#\" onclick=\"fillSSID(this.innerHTML)\">" + WiFi.SSID(i) + String((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? "" : "*") + String(" (") + WiFi.RSSI(i) + "dBM)</a><br>";
       delay(10);
     }
   }
