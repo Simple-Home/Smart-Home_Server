@@ -78,6 +78,11 @@ void sendDiag(){
   jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
   jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
   jsonContent["values"]["wifi"]["unit"] = "dBm";
+  #ifdef SWITCH1_PIN
+    SetRelayLastState();
+    jsonContent["values"]["on/off"]["value"] = state;
+  #endif
+
   sendData(jsonContent, apiToken);
   if (jsonObject.containsKey("command"))
   {
@@ -268,7 +273,7 @@ void loop()
     jsonContent["values"]["battery"]["value"] = readBattery();
     jsonContent["values"]["battery"]["unit"] = "v";
   #endif
-  if ((millis() - lastPost) >= postInterval || buttonPushed) {
+  if ((millis() - lastPost) >= postInterval || jsonContent.containsKey("values")) {
     if (!sendData(jsonContent, apiToken))
     {
       #ifdef ENABLE_SERIAL_PRINT

@@ -4,6 +4,7 @@ String response;
 String sendHttpRequest(String requestJson, String token)
 {
   client.setInsecure();
+  https.setTimeout(15000);
   https.begin(client, String(apiHost + apiUrl));
   https.setReuse(true);
 
