@@ -71,22 +71,22 @@ String apiUrl = API_URL;
 #include <helpers/Commands.h>
 #include <helpers/Wifi.h>
 
-void sendDiag(){
-  DynamicJsonDocument jsonContent(259);
+void sendDiag(String apiTokenL){
+  DynamicJsonDocument jsonContent(289);
   jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
   jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
-  jsonContent["settings"]["firmware_hash"] = ESP.getSketchMD5();
+  jsonContent["settings"]["firmware"]["hash"] = ESP.getSketchMD5();
+  jsonContent["settings"]["firmware"]["ver"] = "2";
   jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
-  jsonContent["values"]["wifi"]["unit"] = "dBm";
   #ifdef SWITCH1_PIN
     SetRelayLastState();
     jsonContent["values"]["on/off"]["value"] = state;
   #endif
 
-  sendData(jsonContent, apiToken);
+  sendData(jsonContent, apiTokenL);
   if (jsonObject.containsKey("command"))
   {
-    commandExecution(jsonObject["command"], apiToken);
+    commandExecution(jsonObject["command"], apiTokenL);
   }
 }
 
@@ -204,7 +204,7 @@ void setup()
   #endif
 
   //Send Diag Data to Server
-  sendDiag();
+  sendDiag(apiToken);
 }
 void loop()
 {

@@ -47,5 +47,5 @@ void SaveEeprom(){
   #ifdef ENABLE_SERIAL_PRINT
     Serial.println((status) ? "EEPROM - Commit OK" : "EEPROM - Commit failed");
   #endif
-  EEPROM.end();
+  //EEPROM.end();
 }
