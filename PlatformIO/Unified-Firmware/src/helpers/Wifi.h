@@ -255,6 +255,13 @@ void serverResponseHandler()
 #ifdef STATIC_IP_SUPPORT
   body += F("<a href='/network'>Static IP setting</a>");
 #endif
+
+#ifdef ENABLE_SERIAL_PRINT
+  body += ReadEeprom(1, 33);
+  body += ReadEeprom(33, 65);
+  body += ReadEeprom(65, 97);
+#endif
+
   body += F("<a href='#'>Refresh</a>");
   body += F("<div class=\"wifi-list\">");
   body += wifiScan();

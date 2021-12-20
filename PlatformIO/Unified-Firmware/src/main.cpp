@@ -77,7 +77,7 @@ void sendDiag(String apiTokenL)
   jsonContent["settings"]["network"]["ip"] = WiFi.localIP().toString();
   jsonContent["settings"]["network"]["mac"] = WiFi.macAddress();
   jsonContent["settings"]["firmware"]["hash"] = ESP.getSketchMD5();
-  jsonContent["settings"]["firmware"]["ver"] = "2";
+  jsonContent["settings"]["firmware"]["ver"] = "3";
   jsonContent["values"]["wifi"]["value"] = (long)WiFi.RSSI();
 #ifdef SWITCH1_PIN
   SetRelayLastState();
