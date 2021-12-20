@@ -1,18 +1,18 @@
 const char *stringToCharArray(String Text)
 {
-  char charBuf[Text.length()];
+  char charBuf[Text.length() + 1];
   Text.toCharArray(charBuf, Text.length());
   return charBuf;
 }
 
 #ifdef LED_PIN
-  void ledWaiting()
-  {
-    digitalWrite(LED_PIN, LOW);
-    delay(500);
-    digitalWrite(LED_PIN, HIGH);
-    delay(500);
-  }
+void ledWaiting()
+{
+  digitalWrite(LED_PIN, LOW);
+  delay(500);
+  digitalWrite(LED_PIN, HIGH);
+  delay(500);
+}
 #endif
 
 bool Contains(String s, String search)
@@ -27,4 +27,3 @@ bool Contains(String s, String search)
 
   return false; //or -1
 }
-

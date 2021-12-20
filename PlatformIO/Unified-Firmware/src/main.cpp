@@ -61,9 +61,6 @@ String configApName = CONFIG_AP_SSID;
 String configApPassword = CONFIG_AP_PASSWOR;
 #endif
 
-//Interupts
-//void ICACHE_RAM_ATTR handleInterruptFalling();
-
 #include <functions/Utils.h>
 #include <helpers/EEPROM.h>
 #include <functions/Outputs.h>
@@ -281,7 +278,7 @@ void loop()
   jsonContent["values"]["battery"]["value"] = readBattery();
   jsonContent["values"]["battery"]["unit"] = "v";
 #endif
-  if ((millis() - lastPost) >= postInterval || jsonContent.containsKey("values"))
+  if ((int)((long)millis() - lastPost) >= postInterval || jsonContent.containsKey("values"))
   {
     if (!sendData(jsonContent, apiToken))
     {
